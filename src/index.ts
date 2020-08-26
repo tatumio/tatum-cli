@@ -3,9 +3,17 @@ import 'reflect-metadata';
 // tslint:disable-next-line:ordered-imports
 import {
     activateAccount,
-    activateCustomer,
+    activateCustomer, bcashBroadcast, bcashGetBlock, bcashGetBlockHash, bcashGetCurrentBlock, bcashGetTransaction, bcashGetTxForAccount,
     blockAmount,
-    createAccount, createVirtualCurrency,
+    btcBroadcast,
+    btcGetBlock,
+    btcGetBlockHash,
+    btcGetCurrentBlock,
+    btcGetTransaction,
+    btcGetTxForAccount,
+    btcGetUTXO,
+    createAccount,
+    createVirtualCurrency,
     Currency,
     deactivateAccount,
     deactivateCustomer,
@@ -23,79 +31,40 @@ import {
     getAllAccounts,
     getAllCustomers,
     getBlockedAmountsByAccountId,
-    getCustomer, getTransactionsByAccount, getTransactionsByCustomer,
+    getCustomer,
+    getTransactionsByAccount,
+    getTransactionsByCustomer,
     getTransactionsByLedger,
-    getTransactionsByReference, getVirtualCurrencyByName, mintVirtualCurrency, revokeVirtualCurrency,
+    getTransactionsByReference,
+    getVirtualCurrencyByName, ltcBroadcast,
+    ltcGetBlock,
+    ltcGetBlockHash,
+    ltcGetCurrentBlock, ltcGetTransaction,
+    ltcGetTxForAccount,
+    ltcGetUTXO,
+    mintVirtualCurrency,
+    revokeVirtualCurrency,
     storeTransaction,
     unfreezeAccount,
-    updateCustomer, updateVirtualCurrency
+    updateCustomer,
+    updateVirtualCurrency
 } from '@tatumio/tatum';
 import meow from 'meow';
 import {Command} from './command';
+import {helpMessage, print} from './helper';
 
-const {input: command, flags} = meow(`
-    Usage
-        $ tatum command
-
-    Commands
-      ## blockchain wallet operations, only run locally
-        wallet create <chain> <testnet> [mnemonic]                  Generate wallet for a specific blockchain and echo it to the output.
-        wallet privatekey create <chain> <mnemonic> <i> <testnet>   Obtain managed wallet from wallet store and generate private key for given derivation index.
-        wallet address create <chain> <xpub> <i> <testnet>          Obtain managed wallet from wallet store and generate address for given derivation index.
-
-      ## Account operations within Tatum Private Ledger, API key is necessary
-        ledger account create "JSON request body"                   https://tatum.io/apidoc.html#operation/createAccount
-        ledger account detail <id>                                  https://tatum.io/apidoc.html#operation/getAccountByAccountId
-        ledger account list <pageSize> <offset>                     https://tatum.io/apidoc.html#operation/getAllAccounts
-        ledger account list customer <id> <pageSize> <offset>       https://tatum.io/apidoc.html#operation/getAccountsByCustomerId
-        ledger account balance <id>                                 https://tatum.io/apidoc.html#operation/getAccountByAccountId
-        ledger account block <id> "JSON request body"               https://tatum.io/apidoc.html#operation/blockAmount
-        ledger account block list <id> <pageSize> <offset>          https://tatum.io/apidoc.html#operation/getBlockAmount
-        ledger account unblock <id>                                 https://tatum.io/apidoc.html#operation/deleteBlockAmount
-        ledger account unblock account <id>                         https://tatum.io/apidoc.html#operation/deleteAllBlockAmount
-        ledger account freeze <id>                                  https://tatum.io/apidoc.html#operation/freezeAccount
-        ledger account unfreeze <id>                                https://tatum.io/apidoc.html#operation/unfreezeAccount
-        ledger account activate <id>                                https://tatum.io/apidoc.html#operation/activateAccount
-        ledger account deactivate <id>                              https://tatum.io/apidoc.html#operation/deactivateAccount
-
-      ## Customer operations within Tatum Private Ledger, API key is necessary
-        ledger customer update <id> "JSON request body"             https://tatum.io/apidoc.html#operation/updateCustomer
-        ledger customer detail <id>                                 https://tatum.io/apidoc.html#operation/getCustomerByExternalId
-        ledger customer list <pageSize> <offset>                    https://tatum.io/apidoc.html#operation/findAllCustomers
-        ledger customer enable <id>                                 https://tatum.io/apidoc.html#operation/enableCustomer
-        ledger customer disable <id>                                https://tatum.io/apidoc.html#operation/disableCustomer
-        ledger customer activate <id>                               https://tatum.io/apidoc.html#operation/activateCustomer
-        ledger customer deactivate <id>                             https://tatum.io/apidoc.html#operation/deactivateCustomer
-
-      ## Transaction operations within Tatum Private Ledger, API key is necessary
-        ledger transaction create "JSON request body"                                   https://tatum.io/apidoc.html#operation/sendTransaction
-        ledger transaction detail <id>                                                  https://tatum.io/apidoc.html#operation/getTransactionsByReference
-        ledger transaction list ledger <pageSize> <offset> "JSON request body"          https://tatum.io/apidoc.html#operation/getTransactions
-        ledger transaction list account <pageSize> <offset> "JSON request body"         https://tatum.io/apidoc.html#operation/getTransactionsByAccountId
-        ledger transaction list customer <pageSize> <offset> "JSON request body"        https://tatum.io/apidoc.html#operation/getTransactionsByCustomerId
-
-      ## Virtual currency operations within Tatum Private Ledger, API key is necessary
-        ledger vc create "JSON request body"            https://tatum.io/apidoc.html#operation/createCurrency
-        ledger vc detail <id>                           https://tatum.io/apidoc.html#operation/getCurrency
-        ledger vc update "JSON request body"            https://tatum.io/apidoc.html#operation/updateCurrency
-        ledger vc mint "JSON request body"              https://tatum.io/apidoc.html#operation/mintCurrency
-        ledger vc revoke "JSON request body"            https://tatum.io/apidoc.html#operation/revokeCurrency
-
-    Options
-        --api-key                         Tatum API Key to communicate with Tatum API. Necessary only for API requests to the Tatum.
-
-`, {
+const {input: command, flags} = meow(helpMessage, {
     flags: {
         'api-key': {
             type: 'string',
+            alias: 'a'
         }
     }
 });
 
-export const print = (data: any) => console.log(JSON.stringify(data, null, 2));
-
 const startup = async () => {
     if (command.length === 0) {
+        console.log(helpMessage);
         return;
     }
     if (flags.apiKey) {
@@ -105,11 +74,11 @@ const startup = async () => {
         // local commands for operations with wallets
         case Command.WALLET:
             if (command[1].toLowerCase() === Command.CREATE) {
-                print(await generateWallet(command[1] as Currency, command[2] === 'testnet', command.length === 4 ? command[3] : undefined));
+                print(await generateWallet(command[2].toUpperCase() as Currency, command[3].toLowerCase() === 'testnet', command.length === 5 ? command[4] : undefined));
             } else if (command[1].toLowerCase() === Command.PRIVATE_KEY) {
-                print(await generatePrivateKeyFromMnemonic(command[3] as Currency, command[6] === 'testnet', command[4], parseInt(command[5])));
+                print(await generatePrivateKeyFromMnemonic(command[3].toUpperCase() as Currency, command[6].toLowerCase() === 'testnet', command[4], parseInt(command[5])));
             } else if (command[1].toLowerCase() === Command.ADDRESS) {
-                print(await generateAddressFromXPub(command[3] as Currency, command[6] === 'testnet', command[4], parseInt(command[5])));
+                print(await generateAddressFromXPub(command[3].toUpperCase() as Currency, command[6].toLowerCase() === 'testnet', command[4], parseInt(command[5])));
             }
             break;
         // commands that require API Key
@@ -233,12 +202,102 @@ const startup = async () => {
         case Command.OFFCHAIN:
             break;
         case Command.BITCOIN:
+            switch (command[1].toLowerCase()) {
+                case Command.BLOCK:
+                    switch (command[2].toLowerCase()) {
+                        case Command.CURRENT:
+                            print(await btcGetCurrentBlock());
+                            break;
+                        case Command.HASH:
+                            print(await btcGetBlockHash(parseInt(command[3])));
+                            break;
+                        case Command.DETAIL:
+                            print(await btcGetBlock(command[3]));
+                            break;
+                    }
+                    break;
+                case Command.TRANSACTION:
+                    switch (command[2].toLowerCase()) {
+                        case Command.ADDRESS:
+                            print(await btcGetTxForAccount(command[3], parseInt(command[4]), parseInt(command[5])));
+                            break;
+                        case Command.UTXO:
+                            print(await btcGetUTXO(command[3], parseInt(command[4])));
+                            break;
+                        case Command.BROADCAST:
+                            print(await btcBroadcast(command[3]));
+                            break;
+                        case Command.DETAIL:
+                            print(await btcGetTransaction(command[3]));
+                            break;
+                    }
+                    break;
+            }
             break;
         case Command.LITECOIN:
+            switch (command[1].toLowerCase()) {
+                case Command.BLOCK:
+                    switch (command[2].toLowerCase()) {
+                        case Command.CURRENT:
+                            print(await ltcGetCurrentBlock());
+                            break;
+                        case Command.HASH:
+                            print(await ltcGetBlockHash(parseInt(command[3])));
+                            break;
+                        case Command.DETAIL:
+                            print(await ltcGetBlock(command[3]));
+                            break;
+                    }
+                    break;
+                case Command.TRANSACTION:
+                    switch (command[2].toLowerCase()) {
+                        case Command.ADDRESS:
+                            print(await ltcGetTxForAccount(command[3], parseInt(command[4]), parseInt(command[5])));
+                            break;
+                        case Command.UTXO:
+                            print(await ltcGetUTXO(command[3], parseInt(command[4])));
+                            break;
+                        case Command.BROADCAST:
+                            print(await ltcBroadcast(command[3]));
+                            break;
+                        case Command.DETAIL:
+                            print(await ltcGetTransaction(command[3]));
+                            break;
+                    }
+                    break;
+            }
             break;
         case Command.ETHEREUM:
             break;
         case Command.BCH:
+            switch (command[1].toLowerCase()) {
+                case Command.BLOCK:
+                    switch (command[2].toLowerCase()) {
+                        case Command.CURRENT:
+                            print(await bcashGetCurrentBlock());
+                            break;
+                        case Command.HASH:
+                            print(await bcashGetBlockHash(parseInt(command[3])));
+                            break;
+                        case Command.DETAIL:
+                            print(await bcashGetBlock(command[3]));
+                            break;
+                    }
+                    break;
+                case Command.TRANSACTION:
+                    switch (command[2].toLowerCase()) {
+                        case Command.ADDRESS:
+                            print(await bcashGetTxForAccount(command[3], parseInt(command[4])));
+                            break;
+                        case Command.BROADCAST:
+                            print(await bcashBroadcast(command[3]));
+                            break;
+                        case Command.DETAIL:
+                            print(await bcashGetTransaction(command[3]));
+                            break;
+                    }
+                    break;
+            }
             break;
         case Command.VECHAIN:
             break;

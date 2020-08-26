@@ -1,7 +1,7 @@
 {
   "name": "@tatumio/tatum-cli",
-  "version": "1.0.0",
-  "description": "Tatum CLI - Command Line Interface to communicate with Tatum.",
+  "version": "1.0.1",
+  "description": "Tatum CLI - Command Line Interface to communicate with blockchain.",
   "main": "dist/index.js",
   "engines": {
     "node": ">=14"

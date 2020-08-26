@@ -1,5 +1,9 @@
 export enum Command {
     CREATE = 'create',
+    CURRENT = 'current',
+    UTXO = 'utxo',
+    BROADCAST = 'broadcast',
+    HASH = 'hash',
     ADDRESS = 'address',
     UPDATE = 'update',
     DETAIL = 'detail',
