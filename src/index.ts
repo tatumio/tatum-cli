@@ -43,7 +43,7 @@ import {
     ltcGetTxForAccount,
     ltcGetUTXO,
     mintVirtualCurrency,
-    revokeVirtualCurrency,
+    revokeVirtualCurrency, sendBitcoinCashTransaction, sendBitcoinTransaction, sendLitecoinTransaction,
     storeTransaction,
     unfreezeAccount,
     updateCustomer,
@@ -51,7 +51,7 @@ import {
 } from '@tatumio/tatum';
 import meow from 'meow';
 import {Command} from './command';
-import {helpMessage, print} from './helper';
+import {helpMessage, parse, print} from './helper';
 
 const {input: command, flags} = meow(helpMessage, {
     flags: {
@@ -87,16 +87,16 @@ const startup = async () => {
                 case Command.ACCOUNT:
                     switch (command[2].toLowerCase()) {
                         case Command.CREATE:
-                            print(await createAccount(JSON.parse(command[3])));
+                            print(await createAccount(parse(command[3])));
                             break;
                         case Command.DETAIL:
                             print(await getAccountById(command[3]));
                             break;
                         case Command.LIST:
                             if (command[3].toLowerCase() === Command.CUSTOMER) {
-                                print(await getAllAccounts(parseInt(command[4]), parseInt(command[5])));
+                                print(await getAccountsByCustomerId(command[4], parseInt(command[5]), parseInt(command[6])));
                             } else {
-                                print(await getAccountsByCustomerId(command[3], parseInt(command[4]), parseInt(command[5])));
+                                print(await getAllAccounts(parseInt(command[3]), parseInt(command[4])));
                             }
                             break;
                         case Command.BALANCE:
@@ -106,7 +106,7 @@ const startup = async () => {
                             if (command[3].toLowerCase() === Command.LIST) {
                                 print(await getBlockedAmountsByAccountId(command[4], parseInt(command[5]), parseInt(command[6])));
                             } else {
-                                print(await blockAmount(command[3], JSON.parse(command[4])));
+                                print(await blockAmount(command[3], parse(command[4])));
                             }
                             break;
                         case Command.UNBLOCK:
@@ -148,7 +148,7 @@ const startup = async () => {
                             print(await getAllCustomers(parseInt(command[3]), parseInt(command[4])));
                             break;
                         case Command.UPDATE:
-                            print(await updateCustomer(command[3], JSON.parse(command[4])));
+                            print(await updateCustomer(command[3], parse(command[4])));
                             break;
                         case Command.DETAIL:
                             print(await getCustomer(command[3]));
@@ -158,7 +158,7 @@ const startup = async () => {
                 case Command.TRANSACTION:
                     switch (command[2].toLowerCase()) {
                         case Command.CREATE:
-                            print(await storeTransaction(JSON.parse(command[3])));
+                            print(await storeTransaction(parse(command[3])));
                             break;
                         case Command.DETAIL:
                             print(await getTransactionsByReference(command[3]));
@@ -166,13 +166,13 @@ const startup = async () => {
                         case Command.LIST:
                             switch (command[3].toLowerCase()) {
                                 case Command.LEDGER:
-                                    print(await getTransactionsByLedger(JSON.parse(command[6]), parseInt(command[4]), parseInt(command[5])));
+                                    print(await getTransactionsByLedger(parse(command[6]), parseInt(command[4]), parseInt(command[5])));
                                     break;
                                 case Command.ACCOUNT:
-                                    print(await getTransactionsByAccount(JSON.parse(command[6]), parseInt(command[4]), parseInt(command[5])));
+                                    print(await getTransactionsByAccount(parse(command[6]), parseInt(command[4]), parseInt(command[5])));
                                     break;
                                 case Command.CUSTOMER:
-                                    print(await getTransactionsByCustomer(JSON.parse(command[6]), parseInt(command[4]), parseInt(command[5])));
+                                    print(await getTransactionsByCustomer(parse(command[6]), parseInt(command[4]), parseInt(command[5])));
                                     break;
                             }
                             break;
@@ -181,19 +181,19 @@ const startup = async () => {
                 case Command.VC:
                     switch (command[2].toLowerCase()) {
                         case Command.CREATE:
-                            print(await createVirtualCurrency(JSON.parse(command[3])));
+                            print(await createVirtualCurrency(parse(command[3])));
                             break;
                         case Command.DETAIL:
                             print(await getVirtualCurrencyByName(command[3]));
                             break;
                         case Command.UPDATE:
-                            print(await updateVirtualCurrency(JSON.parse(command[3])));
+                            print(await updateVirtualCurrency(parse(command[3])));
                             break;
                         case Command.MINT:
-                            print(await mintVirtualCurrency(JSON.parse(command[3])));
+                            print(await mintVirtualCurrency(parse(command[3])));
                             break;
                         case Command.REVOKE:
-                            print(await revokeVirtualCurrency(JSON.parse(command[3])));
+                            print(await revokeVirtualCurrency(parse(command[3])));
                             break;
                     }
                     break;
@@ -218,6 +218,9 @@ const startup = async () => {
                     break;
                 case Command.TRANSACTION:
                     switch (command[2].toLowerCase()) {
+                        case Command.CREATE:
+                            print(await sendBitcoinTransaction(command[3].toLowerCase() === 'testnet', parse(command[4])));
+                            break;
                         case Command.ADDRESS:
                             print(await btcGetTxForAccount(command[3], parseInt(command[4]), parseInt(command[5])));
                             break;
@@ -251,6 +254,9 @@ const startup = async () => {
                     break;
                 case Command.TRANSACTION:
                     switch (command[2].toLowerCase()) {
+                        case Command.CREATE:
+                            print(await sendLitecoinTransaction(command[3].toLowerCase() === 'testnet', parse(command[4])));
+                            break;
                         case Command.ADDRESS:
                             print(await ltcGetTxForAccount(command[3], parseInt(command[4]), parseInt(command[5])));
                             break;
@@ -286,6 +292,9 @@ const startup = async () => {
                     break;
                 case Command.TRANSACTION:
                     switch (command[2].toLowerCase()) {
+                        case Command.CREATE:
+                            print(await sendBitcoinCashTransaction(command[3].toLowerCase() === 'testnet', parse(command[4])));
+                            break;
                         case Command.ADDRESS:
                             print(await bcashGetTxForAccount(command[3], parseInt(command[4])));
                             break;
@@ -315,4 +324,10 @@ const startup = async () => {
     }
 };
 
-startup();
+startup().catch(e => {
+    if (e.response) {
+        console.error(JSON.stringify(e.response.data, null, 2));
+    } else {
+        console.error(e);
+    }
+});
