@@ -1,6 +1,11 @@
 export enum Command {
     CREATE = 'create',
     CURRENT = 'current',
+    ERC20 = 'erc20',
+    COUNT = 'count',
+    DEPLOY = 'deploy',
+    STORE = 'store',
+    DATA = 'data',
     UTXO = 'utxo',
     BROADCAST = 'broadcast',
     HASH = 'hash',

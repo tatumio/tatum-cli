@@ -3,7 +3,13 @@ import 'reflect-metadata';
 // tslint:disable-next-line:ordered-imports
 import {
     activateAccount,
-    activateCustomer, bcashBroadcast, bcashGetBlock, bcashGetBlockHash, bcashGetCurrentBlock, bcashGetTransaction, bcashGetTxForAccount,
+    activateCustomer,
+    bcashBroadcast,
+    bcashGetBlock,
+    bcashGetBlockHash,
+    bcashGetCurrentBlock,
+    bcashGetTransaction,
+    bcashGetTxForAccount,
     blockAmount,
     btcBroadcast,
     btcGetBlock,
@@ -21,7 +27,12 @@ import {
     deleteBlockedAmountForAccount,
     disableCustomer,
     enableCustomer,
-    freezeAccount,
+    ethBroadcast, ethGetAccountBalance,
+    ethGetAccountErc20Address,
+    ethGetAccountTransactions,
+    ethGetBlock,
+    ethGetCurrentBlock,
+    ethGetTransaction, ethGetTransactionsCount, freezeAccount,
     generateAddressFromXPub,
     generatePrivateKeyFromMnemonic,
     generateWallet,
@@ -32,18 +43,27 @@ import {
     getAllCustomers,
     getBlockedAmountsByAccountId,
     getCustomer,
+    getLogRecord,
     getTransactionsByAccount,
     getTransactionsByCustomer,
     getTransactionsByLedger,
     getTransactionsByReference,
-    getVirtualCurrencyByName, ltcBroadcast,
+    getVirtualCurrencyByName,
+    ltcBroadcast,
     ltcGetBlock,
     ltcGetBlockHash,
-    ltcGetCurrentBlock, ltcGetTransaction,
+    ltcGetCurrentBlock,
+    ltcGetTransaction,
     ltcGetTxForAccount,
     ltcGetUTXO,
     mintVirtualCurrency,
-    revokeVirtualCurrency, sendBitcoinCashTransaction, sendBitcoinTransaction, sendLitecoinTransaction,
+    revokeVirtualCurrency,
+    sendBitcoinCashTransaction,
+    sendBitcoinTransaction,
+    sendCustomErc20Transaction,
+    sendDeployErc20Transaction,
+    sendEthOrErc20Transaction,
+    sendLitecoinTransaction, sendStoreDataTransaction,
     storeTransaction,
     unfreezeAccount,
     updateCustomer,
@@ -274,6 +294,70 @@ const startup = async () => {
             }
             break;
         case Command.ETHEREUM:
+            switch (command[1].toLowerCase()) {
+                case Command.BLOCK:
+                    switch (command[2].toLowerCase()) {
+                        case Command.CURRENT:
+                            print(await ethGetCurrentBlock());
+                            break;
+                        case Command.DETAIL:
+                            print(await ethGetBlock(command[3]));
+                            break;
+                    }
+                    break;
+                case Command.ACCOUNT:
+                    switch (command[3].toLowerCase()) {
+                        case Command.ETHEREUM:
+                            print(await ethGetAccountBalance(command[4]));
+                            break;
+                        case Command.ERC20:
+                            print(await ethGetAccountErc20Address(command[4], command[5]));
+                            break;
+                    }
+                    break;
+                case Command.TRANSACTION:
+                    switch (command[2].toLowerCase()) {
+                        case Command.CREATE:
+                            switch (command[3].toLowerCase()) {
+                                case Command.ETHEREUM:
+                                    print(await sendEthOrErc20Transaction(command[4].toLowerCase() === 'testnet', parse(command[5])));
+                                    break;
+                                case Command.ERC20:
+                                    print(await sendCustomErc20Transaction(command[4].toLowerCase() === 'testnet', parse(command[5])));
+                                    break;
+                            }
+                            break;
+                        case Command.ADDRESS:
+                            print(await ethGetAccountTransactions(command[3], parseInt(command[4]), parseInt(command[5])));
+                            break;
+                        case Command.DEPLOY:
+                            print(await sendDeployErc20Transaction(command[3].toLowerCase() === 'testnet', parse(command[4])));
+                            break;
+                        case Command.COUNT:
+                            print(await ethGetTransactionsCount(command[3]));
+                            break;
+                        case Command.BROADCAST:
+                            print(await ethBroadcast(command[3]));
+                            break;
+                        case Command.DETAIL:
+                            print(await ethGetTransaction(command[3]));
+                            break;
+                    }
+                    break;
+            }
+            break;
+        case Command.DATA:
+            switch (command[1].toLowerCase()) {
+                case Command.CREATE:
+                    const data = parse(command[3]);
+                    if (data.chain === Currency.ETH) {
+                        print(await sendStoreDataTransaction(command[2].toLowerCase() === 'testnet', data));
+                    }
+                    break;
+                case Command.DETAIL:
+                    print(await getLogRecord(command[2].toUpperCase() as Currency, command[3]))
+                    break;
+            }
             break;
         case Command.BCH:
             switch (command[1].toLowerCase()) {
