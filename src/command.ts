@@ -5,6 +5,7 @@ export enum Command {
     COUNT = 'count',
     DEPLOY = 'deploy',
     STORE = 'store',
+    FEE = 'fee',
     DATA = 'data',
     UTXO = 'utxo',
     BROADCAST = 'broadcast',

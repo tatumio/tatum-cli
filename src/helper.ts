@@ -1,6 +1,6 @@
 export const helpMessage = `
     Usage
-        $ tatum command
+        $ tatum command ...list of parameters [--apiKey]
 
     Commands
       ## blockchain wallet operations, only run locally
@@ -53,6 +53,28 @@ export const helpMessage = `
          bcash transaction address <address> <pageSize> <offset>                 https://tatum.io/apidoc.html#operation/BchGetTxByAddress
          bcash transaction broadcast <data>                                      https://tatum.io/apidoc.html#operation/BchBroadcast
          bcash transaction create <testnet> <JSON request body, e.g. {\"a\":1}>  https://tatum.io/apidoc.html#operation/BchTransferBlockchain
+
+      ## XRP blockchain operations, API key is required
+         xrp ledger current                                                     https://tatum.io/apidoc.html#operation/XrpGetLastClosedLedger
+         xrp ledger detail <sequence>                                           https://tatum.io/apidoc.html#operation/XrpGetLedger
+         xrp fee                                                                https://tatum.io/apidoc.html#operation/XrpGetFee
+         xrp account detail <address>                                           https://tatum.io/apidoc.html#operation/XrpGetAccountInfo
+         xrp account balance <address>                                          https://tatum.io/apidoc.html#operation/XrpGetAccountBalance
+         xrp transaction detail <hash>                                          https://tatum.io/apidoc.html#operation/XrpGetTransaction
+         xrp transaction address <address> <min> <marker>                       https://tatum.io/apidoc.html#operation/XrpGetAccountTx
+         xrp transaction broadcast <data>                                       https://tatum.io/apidoc.html#operation/XrpBroadcast
+         xrp transaction create <JSON request body, e.g. {\"a\":1}>             https://tatum.io/apidoc.html#operation/XrpTransferBlockchain
+
+      ## Stellar XLM blockchain operations, API key is required
+         stellar ledger current                                                     https://tatum.io/apidoc.html#operation/XlmGetLastClosedLedger
+         stellar ledger detail <sequence>                                           https://tatum.io/apidoc.html#operation/XlmGetLedger
+         stellar fee                                                                https://tatum.io/apidoc.html#operation/XlmGetFee
+         stellar account detail <address>                                           https://tatum.io/apidoc.html#operation/XlmGetAccountInfo
+         stellar transaction detail <hash>                                          https://tatum.io/apidoc.html#operation/XlmGetTransaction
+         stellar transaction ledger <sequence>                                      https://tatum.io/apidoc.html#operation/XlmGetLedgerTx
+         stellar transaction address <address>                                      https://tatum.io/apidoc.html#operation/XlmGetAccountTx
+         stellar transaction broadcast <data>                                       https://tatum.io/apidoc.html#operation/XlmBroadcast
+         stellar transaction create <testnet> <JSON request body, e.g. {\"a\":1}>   https://tatum.io/apidoc.html#operation/XlmTransferBlockchain
 
       ## Account operations within Tatum Private Ledger, API key is necessary
          ledger account create <JSON request body, e.g. {\"a\":1}>       https://tatum.io/apidoc.html#operation/createAccount

@@ -27,12 +27,15 @@ import {
     deleteBlockedAmountForAccount,
     disableCustomer,
     enableCustomer,
-    ethBroadcast, ethGetAccountBalance,
+    ethBroadcast,
+    ethGetAccountBalance,
     ethGetAccountErc20Address,
     ethGetAccountTransactions,
     ethGetBlock,
     ethGetCurrentBlock,
-    ethGetTransaction, ethGetTransactionsCount, freezeAccount,
+    ethGetTransaction,
+    ethGetTransactionsCount,
+    freezeAccount,
     generateAddressFromXPub,
     generatePrivateKeyFromMnemonic,
     generateWallet,
@@ -63,11 +66,22 @@ import {
     sendCustomErc20Transaction,
     sendDeployErc20Transaction,
     sendEthOrErc20Transaction,
-    sendLitecoinTransaction, sendStoreDataTransaction,
+    sendLitecoinTransaction,
+    sendStoreDataTransaction, sendXlmTransaction,
+    sendXrpTransaction,
     storeTransaction,
     unfreezeAccount,
     updateCustomer,
-    updateVirtualCurrency
+    updateVirtualCurrency, xlmBroadcast, xlmGetAccountInfo, xlmGetAccountTransactions,
+    xlmGetCurrentLedger, xlmGetFee, xlmGetLedger, xlmGetLedgerTx, xlmGetTransaction,
+    xrpBroadcast,
+    xrpGetAccountBalance,
+    xrpGetAccountInfo,
+    xrpGetAccountTransactions,
+    xrpGetCurrentLedger,
+    xrpGetFee,
+    xrpGetLedger,
+    xrpGetTransaction
 } from '@tatumio/tatum';
 import meow from 'meow';
 import {Command} from './command';
@@ -131,38 +145,38 @@ const startup = async () => {
                             break;
                         case Command.UNBLOCK:
                             if (command[3].toLowerCase() === Command.ACCOUNT) {
-                                print(await deleteBlockedAmountForAccount(command[4]));
+                                await deleteBlockedAmountForAccount(command[4]);
                             } else {
-                                print(await deleteBlockedAmount(command[3]));
+                                await deleteBlockedAmount(command[3]);
                             }
                             break;
                         case Command.FREEZE:
-                            print(await freezeAccount(command[3]));
+                            await freezeAccount(command[3]);
                             break;
                         case Command.UNFREEZE:
-                            print(await unfreezeAccount(command[3]));
+                            await unfreezeAccount(command[3]);
                             break;
                         case Command.ACTIVATE:
-                            print(await activateAccount(command[3]));
+                            await activateAccount(command[3]);
                             break;
                         case Command.DEACTIVATE:
-                            print(await deactivateAccount(command[3]));
+                            await deactivateAccount(command[3]);
                             break;
                     }
                     break;
                 case Command.CUSTOMER:
                     switch (command[2].toLowerCase()) {
                         case Command.ENABLE:
-                            print(await enableCustomer(command[3]));
+                            await enableCustomer(command[3]);
                             break;
                         case Command.DISABLE:
-                            print(await disableCustomer(command[3]));
+                            await disableCustomer(command[3]);
                             break;
                         case Command.ACTIVATE:
-                            print(await activateCustomer(command[3]));
+                            await activateCustomer(command[3]);
                             break;
                         case Command.DEACTIVATE:
-                            print(await deactivateCustomer(command[3]));
+                            await deactivateCustomer(command[3]);
                             break;
                         case Command.LIST:
                             print(await getAllCustomers(parseInt(command[3]), parseInt(command[4])));
@@ -207,7 +221,7 @@ const startup = async () => {
                             print(await getVirtualCurrencyByName(command[3]));
                             break;
                         case Command.UPDATE:
-                            print(await updateVirtualCurrency(parse(command[3])));
+                            await updateVirtualCurrency(parse(command[3]));
                             break;
                         case Command.MINT:
                             print(await mintVirtualCurrency(parse(command[3])));
@@ -392,15 +406,91 @@ const startup = async () => {
                     break;
             }
             break;
-        case Command.VECHAIN:
-            break;
-        case Command.BNB:
-            break;
         case Command.XRP:
+            switch (command[1].toLowerCase()) {
+                case Command.LEDGER:
+                    switch (command[2].toLowerCase()) {
+                        case Command.CURRENT:
+                            print(await xrpGetCurrentLedger());
+                            break;
+                        case Command.DETAIL:
+                            print(await xrpGetLedger(parseInt(command[3])));
+                            break;
+                    }
+                    break;
+                case Command.ACCOUNT:
+                    switch (command[2].toLowerCase()) {
+                        case Command.BALANCE:
+                            print(await xrpGetAccountBalance(command[3]));
+                            break;
+                        case Command.DETAIL:
+                            print(await xrpGetAccountInfo(command[3]));
+                            break;
+                    }
+                    break;
+                case Command.FEE:
+                    print(await xrpGetFee());
+                    break;
+                case Command.TRANSACTION:
+                    switch (command[2].toLowerCase()) {
+                        case Command.CREATE:
+                            print(await sendXrpTransaction(parse(command[3])));
+                            break;
+                        case Command.ADDRESS:
+                            print(await xrpGetAccountTransactions(command[3], parseInt(command[4]), command[5]));
+                            break;
+                        case Command.BROADCAST:
+                            print(await xrpBroadcast(command[3]));
+                            break;
+                        case Command.DETAIL:
+                            print(await xrpGetTransaction(command[3]));
+                            break;
+                    }
+                    break;
+            }
             break;
         case Command.XLM:
-            break;
-        case Command.NEO:
+            switch (command[1].toLowerCase()) {
+                case Command.LEDGER:
+                    switch (command[2].toLowerCase()) {
+                        case Command.CURRENT:
+                            print(await xlmGetCurrentLedger());
+                            break;
+                        case Command.DETAIL:
+                            print(await xlmGetLedger(parseInt(command[3])));
+                            break;
+                    }
+                    break;
+                case Command.ACCOUNT:
+                    switch (command[2].toLowerCase()) {
+                        case Command.DETAIL:
+                            print(await xlmGetAccountInfo(command[3]));
+                            break;
+                    }
+                    break;
+                case Command.FEE:
+                    print(await xlmGetFee());
+                    break;
+                case Command.TRANSACTION:
+                    switch (command[2].toLowerCase()) {
+                        case Command.CREATE:
+                            print(await sendXlmTransaction(command[3].toLowerCase() === 'testnet', parse(command[4])));
+                            break;
+                        case Command.ADDRESS:
+                            print(await xlmGetAccountTransactions(command[3]));
+                            break;
+                        case Command.LEDGER:
+                            print(await xlmGetLedgerTx(parseInt(command[3])));
+                            break;
+                        case Command.BROADCAST:
+                            print(await xlmBroadcast(command[3]));
+                            break;
+                        case Command.DETAIL:
+                            print(await xlmGetTransaction(command[3]));
+                            break;
+                    }
+                    break;
+            }
             break;
         default:
             console.error('Unsupported command. Use tatum --help for details.');
