@@ -3,7 +3,7 @@ import 'reflect-metadata';
 // tslint:disable-next-line:ordered-imports
 import {
     activateAccount,
-    activateCustomer,
+    activateCustomer, assignDepositAddress,
     bcashBroadcast,
     bcashGetBlock,
     bcashGetBlockHash,
@@ -17,7 +17,7 @@ import {
     btcGetCurrentBlock,
     btcGetTransaction,
     btcGetTxForAccount,
-    btcGetUTXO,
+    btcGetUTXO, checkAddressExists,
     createAccount,
     createVirtualCurrency,
     Currency,
@@ -36,7 +36,7 @@ import {
     ethGetTransaction,
     ethGetTransactionsCount,
     freezeAccount,
-    generateAddressFromXPub,
+    generateAddressFromXPub, generateDepositAddress,
     generatePrivateKeyFromMnemonic,
     generateWallet,
     getAccountBalance,
@@ -45,7 +45,7 @@ import {
     getAllAccounts,
     getAllCustomers,
     getBlockedAmountsByAccountId,
-    getCustomer,
+    getCustomer, getDepositAddressesForAccount,
     getLogRecord,
     getTransactionsByAccount,
     getTransactionsByCustomer,
@@ -59,15 +59,15 @@ import {
     ltcGetTransaction,
     ltcGetTxForAccount,
     ltcGetUTXO,
-    mintVirtualCurrency,
-    revokeVirtualCurrency,
-    sendBitcoinCashTransaction,
+    mintVirtualCurrency, offchainBroadcast, offchainCancelWithdrawal, offchainCompleteWithdrawal, offchainStoreWithdrawal, removeDepositAddress,
+    revokeVirtualCurrency, sendBitcoinCashOffchainTransaction,
+    sendBitcoinCashTransaction, sendBitcoinOffchainTransaction,
     sendBitcoinTransaction,
     sendCustomErc20Transaction,
-    sendDeployErc20Transaction,
-    sendEthOrErc20Transaction,
+    sendDeployErc20Transaction, sendEthErc20OffchainTransaction, sendEthOffchainTransaction,
+    sendEthOrErc20Transaction, sendLitecoinOffchainTransaction,
     sendLitecoinTransaction,
-    sendStoreDataTransaction, sendXlmTransaction,
+    sendStoreDataTransaction, sendXlmOffchainTransaction, sendXlmTransaction, sendXrpOffchainTransaction,
     sendXrpTransaction,
     storeTransaction,
     unfreezeAccount,
@@ -92,6 +92,10 @@ const {input: command, flags} = meow(helpMessage, {
         'api-key': {
             type: 'string',
             alias: 'a'
+        },
+        index: {
+            type: 'number',
+            alias: 'i'
         }
     }
 });
@@ -103,6 +107,11 @@ const startup = async () => {
     }
     if (flags.apiKey) {
         process.env.TATUM_API_KEY = flags.apiKey as string;
+    }
+    else if (command[0].toLowerCase() !== Command.WALLET) {
+        console.error('API key not provided. You can obtain one at https://tatum.io.');
+        process.exit(-1);
+        return;
     }
     switch (command[0].toLowerCase()) {
         // local commands for operations with wallets
@@ -146,21 +155,27 @@ const startup = async () => {
                         case Command.UNBLOCK:
                             if (command[3].toLowerCase() === Command.ACCOUNT) {
                                 await deleteBlockedAmountForAccount(command[4]);
+                                print({status: 'OK'});
                             } else {
                                 await deleteBlockedAmount(command[3]);
+                                print({status: 'OK'});
                             }
                             break;
                         case Command.FREEZE:
                             await freezeAccount(command[3]);
+                            print({status: 'OK'});
                             break;
                         case Command.UNFREEZE:
                             await unfreezeAccount(command[3]);
+                            print({status: 'OK'});
                             break;
                         case Command.ACTIVATE:
                             await activateAccount(command[3]);
+                            print({status: 'OK'});
                             break;
                         case Command.DEACTIVATE:
                             await deactivateAccount(command[3]);
+                            print({status: 'OK'});
                             break;
                     }
                     break;
@@ -168,15 +183,19 @@ const startup = async () => {
                     switch (command[2].toLowerCase()) {
                         case Command.ENABLE:
                             await enableCustomer(command[3]);
+                            print({status: 'OK'});
                             break;
                         case Command.DISABLE:
                             await disableCustomer(command[3]);
+                            print({status: 'OK'});
                             break;
                         case Command.ACTIVATE:
                             await activateCustomer(command[3]);
+                            print({status: 'OK'});
                             break;
                         case Command.DEACTIVATE:
                             await deactivateCustomer(command[3]);
+                            print({status: 'OK'});
                             break;
                         case Command.LIST:
                             print(await getAllCustomers(parseInt(command[3]), parseInt(command[4])));
@@ -222,6 +241,7 @@ const startup = async () => {
                             break;
                         case Command.UPDATE:
                             await updateVirtualCurrency(parse(command[3]));
+                            print({status: 'OK'});
                             break;
                         case Command.MINT:
                             print(await mintVirtualCurrency(parse(command[3])));
@@ -234,6 +254,74 @@ const startup = async () => {
             }
             break;
         case Command.OFFCHAIN:
+            switch (command[1].toLowerCase()) {
+                case Command.ACCOUNT:
+                    switch (command[3].toLowerCase()) {
+                        case Command.CREATE:
+                            print(await generateDepositAddress(command[4], flags.index));
+                            break;
+                        case Command.ASSIGN:
+                            print(await assignDepositAddress(command[4], command[5]));
+                            break;
+                        case Command.LIST:
+                                print(await getDepositAddressesForAccount(command[4]));
+                            break;
+                        case Command.EXIST:
+                            print(await checkAddressExists(command[4], command[5], flags.index));
+                            break;
+                        case Command.DELETE:
+                                print(await removeDepositAddress(command[4], command[5]));
+                            break;
+                    }
+                    break;
+                case Command.WITHDRAWAL:
+                    switch (command[2].toLowerCase()) {
+                        case Command.CREATE:
+                            print(await offchainStoreWithdrawal(parse(command[3])));
+                            break;
+                        case Command.COMPLETE:
+                            await offchainCompleteWithdrawal(command[3], command[4]);
+                            print({status: 'OK'});
+                            break;
+                        case Command.CANCEL:
+                            await offchainCancelWithdrawal(command[3], command[4].toLowerCase() === 'true');
+                            print({status: 'OK'});
+                            break;
+                        case Command.BROADCAST:
+                            print(await offchainBroadcast(parse(command[3])));
+                            break;
+                    }
+                    break;
+                case Command.TRANSACTION:
+                    switch (command[2].toLowerCase()) {
+                        case Command.BITCOIN:
+                            print(await sendBitcoinOffchainTransaction(command[4].toLowerCase() === 'testnet', parse(command[5])));
+                            break;
+                        case Command.LITECOIN:
+                            print(await sendLitecoinOffchainTransaction(command[4].toLowerCase() === 'testnet', parse(command[5])));
+                            break;
+                        case Command.BCH:
+                            print(await sendBitcoinCashOffchainTransaction(command[4].toLowerCase() === 'testnet', parse(command[5])));
+                            break;
+                        case Command.XRP:
+                            print(await sendXrpOffchainTransaction(command[4].toLowerCase() === 'testnet', parse(command[5])));
+                            break;
+                        case Command.XLM:
+                            print(await sendXlmOffchainTransaction(command[4].toLowerCase() === 'testnet', parse(command[5])));
+                            break;
+                        case Command.ETHEREUM:
+                            switch (command[3].toLowerCase()) {
+                                case Command.ERC20:
+                                    print(await sendEthErc20OffchainTransaction(command[5].toLowerCase() === 'testnet', parse(command[6])));
+                                    break;
+                                case Command.CREATE:
+                                    print(await sendEthOffchainTransaction(command[4].toLowerCase() === 'testnet', parse(command[5])));
+                                    break;
+                            }
+                            break;
+                    }
+                    break;
+            }
             break;
         case Command.BITCOIN:
             switch (command[1].toLowerCase()) {
@@ -504,4 +592,5 @@ startup().catch(e => {
     } else {
         console.error(e);
     }
+    process.exit(-1);
 });
