@@ -136,7 +136,8 @@ export const helpMessage = `
 
     Options
          --api-key, -a                                   Tatum API Key to communicate with Tatum API. Necessary only for API requests to the Tatum.
-         --index, -i                                     Optional index for offchain account address methods
+         --index, -i                                     Optional index for offchain account address methods.
+         --version, -v                                   Version of the CLI tool.
 
 `;
 

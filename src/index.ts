@@ -96,6 +96,9 @@ const {input: command, flags} = meow(helpMessage, {
         index: {
             type: 'number',
             alias: 'i'
+        },
+        version: {
+            alias: 'v'
         }
     }
 });
@@ -103,6 +106,10 @@ const {input: command, flags} = meow(helpMessage, {
 const startup = async () => {
     if (command.length === 0) {
         console.log(helpMessage);
+        return;
+    }
+    if (flags.version) {
+        console.log(require('../package.json').version);
         return;
     }
     if (flags.apiKey) {
@@ -433,7 +440,7 @@ const startup = async () => {
                             print(await ethGetAccountTransactions(command[3], parseInt(command[4]), parseInt(command[5])));
                             break;
                         case Command.DEPLOY:
-                            print(await sendDeployErc20Transaction(command[3].toLowerCase() === 'testnet', parse(command[4])));
+                            print(await sendDeployErc20Transaction(command[4].toLowerCase() === 'testnet', parse(command[5])));
                             break;
                         case Command.COUNT:
                             print(await ethGetTransactionsCount(command[3]));
