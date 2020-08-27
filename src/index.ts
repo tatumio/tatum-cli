@@ -109,7 +109,7 @@ const startup = async () => {
         return;
     }
     if (flags.version) {
-        console.log(require('../package.json').version);
+        console.log(require('package.json').version);
         return;
     }
     if (flags.apiKey) {

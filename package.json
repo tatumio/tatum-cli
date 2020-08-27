@@ -1,13 +1,13 @@
 {
   "name": "@tatumio/tatum-cli",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Tatum CLI - Command Line Interface to communicate with blockchain.",
   "main": "dist/index.js",
   "engines": {
     "node": ">=14"
   },
   "scripts": {
-    "prepublish": "tsc"
+    "prepublish": "rimraf dist && tsc"
   },
   "files": [
     "dist/"
