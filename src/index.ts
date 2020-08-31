@@ -114,8 +114,7 @@ const startup = async () => {
     }
     if (flags.apiKey) {
         process.env.TATUM_API_KEY = flags.apiKey as string;
-    }
-    else if (command[0].toLowerCase() !== Command.WALLET) {
+    } else if (command[0].toLowerCase() !== Command.WALLET) {
         console.error('API key not provided. You can obtain one at https://tatum.io.');
         process.exit(-1);
         return;
@@ -271,13 +270,14 @@ const startup = async () => {
                             print(await assignDepositAddress(command[4], command[5]));
                             break;
                         case Command.LIST:
-                                print(await getDepositAddressesForAccount(command[4]));
+                            print(await getDepositAddressesForAccount(command[4]));
                             break;
                         case Command.EXIST:
                             print(await checkAddressExists(command[4], command[5], flags.index));
                             break;
                         case Command.DELETE:
-                                print(await removeDepositAddress(command[4], command[5]));
+                            await removeDepositAddress(command[4], command[5]);
+                            print({status: 'OK'});
                             break;
                     }
                     break;
@@ -464,7 +464,7 @@ const startup = async () => {
                     }
                     break;
                 case Command.DETAIL:
-                    print(await getLogRecord(command[2].toUpperCase() as Currency, command[3]))
+                    print(await getLogRecord(command[2].toUpperCase() as Currency, command[3]));
                     break;
             }
             break;
