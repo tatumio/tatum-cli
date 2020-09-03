@@ -1,5 +1,8 @@
 #!/usr/bin/env node
+import readline from 'readline';
 import 'reflect-metadata';
+// tslint:disable-next-line:ordered-imports
+import {TATUM_API_URL} from '@tatumio/tatum/dist/src/constants';
 // tslint:disable-next-line:ordered-imports
 import {
     activateAccount,
@@ -83,6 +86,7 @@ import {
     xrpGetLedger,
     xrpGetTransaction
 } from '@tatumio/tatum';
+import axios from 'axios';
 import meow from 'meow';
 import {Command} from './command';
 import {helpMessage, parse, print} from './helper';
@@ -458,10 +462,21 @@ const startup = async () => {
         case Command.DATA:
             switch (command[1].toLowerCase()) {
                 case Command.CREATE:
-                    const data = parse(command.slice(3).join(' '));
-                    if (data.chain === Currency.ETH) {
-                        print(await sendStoreDataTransaction(command[2].toLowerCase() === 'testnet', data));
-                    }
+                    const rl = readline.createInterface({
+                        input: process.stdin,
+                    });
+                    rl.on('line', async (line) => {
+                        try {
+                            print((await axios.post(TATUM_API_URL + '/v3/record', {data: line.trim(), chain: Currency.ETH}, {
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'x-api-key': process.env.TATUM_API_KEY,
+                                }
+                            })).data);
+                        } catch (e) {
+                            print(e.response ? e.response.data : e);
+                        }
+                    });
                     break;
                 case Command.DETAIL:
                     print(await getLogRecord(command[2].toUpperCase() as Currency, command[3]));

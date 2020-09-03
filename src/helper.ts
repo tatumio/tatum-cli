@@ -14,7 +14,7 @@ Commands
     wallet address create <chain> <xpub> <i> <testnet>  Generate address for given derivation index from xpub.
 
 ## store and obtain data from blockchain, API key is required
-    data create <testnet> <JSON stringified request body>   https://tatum.io/apidoc.html#operation/StoreLog
+    data create <data from STDIN>    Read data from STDIN and store it to the Ethereum blockchain chosen by the API Key - testnet or mainnet
     data detail <chain> <id>    https://tatum.io/apidoc.html#operation/GetLog
 
 ## Bitcoin blockchain operations, API key is required
