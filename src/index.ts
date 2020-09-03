@@ -136,7 +136,7 @@ const startup = async () => {
                 case Command.ACCOUNT:
                     switch (command[2].toLowerCase()) {
                         case Command.CREATE:
-                            print(await createAccount(parse(command[3])));
+                            print(await createAccount(parse(command.slice(3).join(' '))));
                             break;
                         case Command.DETAIL:
                             print(await getAccountById(command[3]));
@@ -155,7 +155,7 @@ const startup = async () => {
                             if (command[3].toLowerCase() === Command.LIST) {
                                 print(await getBlockedAmountsByAccountId(command[4], parseInt(command[5]), parseInt(command[6])));
                             } else {
-                                print(await blockAmount(command[3], parse(command[4])));
+                                print(await blockAmount(command[3], parse(command.slice(4).join(' '))));
                             }
                             break;
                         case Command.UNBLOCK:
@@ -207,7 +207,7 @@ const startup = async () => {
                             print(await getAllCustomers(parseInt(command[3]), parseInt(command[4])));
                             break;
                         case Command.UPDATE:
-                            print(await updateCustomer(command[3], parse(command[4])));
+                            print(await updateCustomer(command[3], parse(command.slice(4).join(' '))));
                             break;
                         case Command.DETAIL:
                             print(await getCustomer(command[3]));
@@ -217,7 +217,7 @@ const startup = async () => {
                 case Command.TRANSACTION:
                     switch (command[2].toLowerCase()) {
                         case Command.CREATE:
-                            print(await storeTransaction(parse(command[3])));
+                            print(await storeTransaction(parse(command.slice(3).join(' '))));
                             break;
                         case Command.DETAIL:
                             print(await getTransactionsByReference(command[3]));
@@ -225,13 +225,13 @@ const startup = async () => {
                         case Command.LIST:
                             switch (command[3].toLowerCase()) {
                                 case Command.LEDGER:
-                                    print(await getTransactionsByLedger(parse(command[6]), parseInt(command[4]), parseInt(command[5])));
+                                    print(await getTransactionsByLedger(parse(command.slice(6).join(' ')), parseInt(command[4]), parseInt(command[5])));
                                     break;
                                 case Command.ACCOUNT:
-                                    print(await getTransactionsByAccount(parse(command[6]), parseInt(command[4]), parseInt(command[5])));
+                                    print(await getTransactionsByAccount(parse(command.slice(6).join(' ')), parseInt(command[4]), parseInt(command[5])));
                                     break;
                                 case Command.CUSTOMER:
-                                    print(await getTransactionsByCustomer(parse(command[6]), parseInt(command[4]), parseInt(command[5])));
+                                    print(await getTransactionsByCustomer(parse(command.slice(6).join(' ')), parseInt(command[4]), parseInt(command[5])));
                                     break;
                             }
                             break;
@@ -240,20 +240,20 @@ const startup = async () => {
                 case Command.VC:
                     switch (command[2].toLowerCase()) {
                         case Command.CREATE:
-                            print(await createVirtualCurrency(parse(command[3])));
+                            print(await createVirtualCurrency(parse(command.slice(3).join(' '))));
                             break;
                         case Command.DETAIL:
                             print(await getVirtualCurrencyByName(command[3]));
                             break;
                         case Command.UPDATE:
-                            await updateVirtualCurrency(parse(command[3]));
+                            await updateVirtualCurrency(parse(command.slice(3).join(' ')));
                             print({status: 'OK'});
                             break;
                         case Command.MINT:
-                            print(await mintVirtualCurrency(parse(command[3])));
+                            print(await mintVirtualCurrency(parse(command.slice(3).join(' '))));
                             break;
                         case Command.REVOKE:
-                            print(await revokeVirtualCurrency(parse(command[3])));
+                            print(await revokeVirtualCurrency(parse(command.slice(3).join(' '))));
                             break;
                     }
                     break;
@@ -284,7 +284,7 @@ const startup = async () => {
                 case Command.WITHDRAWAL:
                     switch (command[2].toLowerCase()) {
                         case Command.CREATE:
-                            print(await offchainStoreWithdrawal(parse(command[3])));
+                            print(await offchainStoreWithdrawal(parse(command.slice(3).join(' '))));
                             break;
                         case Command.COMPLETE:
                             await offchainCompleteWithdrawal(command[3], command[4]);
@@ -295,34 +295,34 @@ const startup = async () => {
                             print({status: 'OK'});
                             break;
                         case Command.BROADCAST:
-                            print(await offchainBroadcast(parse(command[3])));
+                            print(await offchainBroadcast(parse(command.slice(3).join(' '))));
                             break;
                     }
                     break;
                 case Command.TRANSACTION:
                     switch (command[2].toLowerCase()) {
                         case Command.BITCOIN:
-                            print(await sendBitcoinOffchainTransaction(command[4].toLowerCase() === 'testnet', parse(command[5])));
+                            print(await sendBitcoinOffchainTransaction(command[4].toLowerCase() === 'testnet', parse(command.slice(5).join(' '))));
                             break;
                         case Command.LITECOIN:
-                            print(await sendLitecoinOffchainTransaction(command[4].toLowerCase() === 'testnet', parse(command[5])));
+                            print(await sendLitecoinOffchainTransaction(command[4].toLowerCase() === 'testnet', parse(command.slice(5).join(' '))));
                             break;
                         case Command.BCH:
-                            print(await sendBitcoinCashOffchainTransaction(command[4].toLowerCase() === 'testnet', parse(command[5])));
+                            print(await sendBitcoinCashOffchainTransaction(command[4].toLowerCase() === 'testnet', parse(command.slice(5).join(' '))));
                             break;
                         case Command.XRP:
-                            print(await sendXrpOffchainTransaction(command[4].toLowerCase() === 'testnet', parse(command[5])));
+                            print(await sendXrpOffchainTransaction(command[4].toLowerCase() === 'testnet', parse(command.slice(5).join(' '))));
                             break;
                         case Command.XLM:
-                            print(await sendXlmOffchainTransaction(command[4].toLowerCase() === 'testnet', parse(command[5])));
+                            print(await sendXlmOffchainTransaction(command[4].toLowerCase() === 'testnet', parse(command.slice(5).join(' '))));
                             break;
                         case Command.ETHEREUM:
                             switch (command[3].toLowerCase()) {
                                 case Command.ERC20:
-                                    print(await sendEthErc20OffchainTransaction(command[5].toLowerCase() === 'testnet', parse(command[6])));
+                                    print(await sendEthErc20OffchainTransaction(command[5].toLowerCase() === 'testnet', parse(command.slice(6).join(' '))));
                                     break;
                                 case Command.CREATE:
-                                    print(await sendEthOffchainTransaction(command[4].toLowerCase() === 'testnet', parse(command[5])));
+                                    print(await sendEthOffchainTransaction(command[4].toLowerCase() === 'testnet', parse(command.slice(5).join(' '))));
                                     break;
                             }
                             break;
@@ -348,7 +348,7 @@ const startup = async () => {
                 case Command.TRANSACTION:
                     switch (command[2].toLowerCase()) {
                         case Command.CREATE:
-                            print(await sendBitcoinTransaction(command[3].toLowerCase() === 'testnet', parse(command[4])));
+                            print(await sendBitcoinTransaction(command[3].toLowerCase() === 'testnet', parse(command.slice(4).join(' '))));
                             break;
                         case Command.ADDRESS:
                             print(await btcGetTxForAccount(command[3], parseInt(command[4]), parseInt(command[5])));
@@ -384,7 +384,7 @@ const startup = async () => {
                 case Command.TRANSACTION:
                     switch (command[2].toLowerCase()) {
                         case Command.CREATE:
-                            print(await sendLitecoinTransaction(command[3].toLowerCase() === 'testnet', parse(command[4])));
+                            print(await sendLitecoinTransaction(command[3].toLowerCase() === 'testnet', parse(command.slice(4).join(' '))));
                             break;
                         case Command.ADDRESS:
                             print(await ltcGetTxForAccount(command[3], parseInt(command[4]), parseInt(command[5])));
@@ -429,10 +429,10 @@ const startup = async () => {
                         case Command.CREATE:
                             switch (command[3].toLowerCase()) {
                                 case Command.ETHEREUM:
-                                    print(await sendEthOrErc20Transaction(command[4].toLowerCase() === 'testnet', parse(command[5])));
+                                    print(await sendEthOrErc20Transaction(command[4].toLowerCase() === 'testnet', parse(command.slice(5).join(' '))));
                                     break;
                                 case Command.ERC20:
-                                    print(await sendCustomErc20Transaction(command[4].toLowerCase() === 'testnet', parse(command[5])));
+                                    print(await sendCustomErc20Transaction(command[4].toLowerCase() === 'testnet', parse(command.slice(5).join(' '))));
                                     break;
                             }
                             break;
@@ -440,7 +440,7 @@ const startup = async () => {
                             print(await ethGetAccountTransactions(command[3], parseInt(command[4]), parseInt(command[5])));
                             break;
                         case Command.DEPLOY:
-                            print(await sendDeployErc20Transaction(command[4].toLowerCase() === 'testnet', parse(command[5])));
+                            print(await sendDeployErc20Transaction(command[4].toLowerCase() === 'testnet', parse(command.slice(5).join(' '))));
                             break;
                         case Command.COUNT:
                             print(await ethGetTransactionsCount(command[3]));
@@ -458,7 +458,7 @@ const startup = async () => {
         case Command.DATA:
             switch (command[1].toLowerCase()) {
                 case Command.CREATE:
-                    const data = parse(command[3]);
+                    const data = parse(command.slice(3).join(' '));
                     if (data.chain === Currency.ETH) {
                         print(await sendStoreDataTransaction(command[2].toLowerCase() === 'testnet', data));
                     }
@@ -486,7 +486,7 @@ const startup = async () => {
                 case Command.TRANSACTION:
                     switch (command[2].toLowerCase()) {
                         case Command.CREATE:
-                            print(await sendBitcoinCashTransaction(command[3].toLowerCase() === 'testnet', parse(command[4])));
+                            print(await sendBitcoinCashTransaction(command[3].toLowerCase() === 'testnet', parse(command.slice(4).join(' '))));
                             break;
                         case Command.ADDRESS:
                             print(await bcashGetTxForAccount(command[3], parseInt(command[4])));
@@ -529,7 +529,7 @@ const startup = async () => {
                 case Command.TRANSACTION:
                     switch (command[2].toLowerCase()) {
                         case Command.CREATE:
-                            print(await sendXrpTransaction(parse(command[3])));
+                            print(await sendXrpTransaction(parse(command.slice(3).join(' '))));
                             break;
                         case Command.ADDRESS:
                             print(await xrpGetAccountTransactions(command[3], parseInt(command[4]), command[5]));
@@ -569,7 +569,7 @@ const startup = async () => {
                 case Command.TRANSACTION:
                     switch (command[2].toLowerCase()) {
                         case Command.CREATE:
-                            print(await sendXlmTransaction(command[3].toLowerCase() === 'testnet', parse(command[4])));
+                            print(await sendXlmTransaction(command[3].toLowerCase() === 'testnet', parse(command.slice(4).join(' '))));
                             break;
                         case Command.ADDRESS:
                             print(await xlmGetAccountTransactions(command[3]));
