@@ -462,10 +462,10 @@ const startup = async () => {
         case Command.DATA:
             switch (command[1].toLowerCase()) {
                 case Command.CREATE:
-                    const rl = readline.createInterface({
-                        input: process.stdin,
-                    });
-                    rl.on('line', async (line) => {
+                    process.stdin.pipe(require('split')()).on('data', async (line: string) => {
+                        if (line.trim().length === 0) {
+                            return;
+                        }
                         try {
                             print((await axios.post(TATUM_API_URL + '/v3/record', {data: line.trim(), chain: Currency.ETH}, {
                                 headers: {
