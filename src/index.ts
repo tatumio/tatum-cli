@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 import readline from 'readline';
-import 'reflect-metadata';
 // tslint:disable-next-line:ordered-imports
 import {TATUM_API_URL} from '@tatumio/tatum/dist/src/constants';
 // tslint:disable-next-line:ordered-imports
