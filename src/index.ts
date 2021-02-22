@@ -96,6 +96,10 @@ const {input: command, flags} = meow(helpMessage, {
             type: 'string',
             alias: 'a'
         },
+        'x-quorum-endpoint': {
+            type: 'string',
+            alias: 'q'
+        },
         index: {
             type: 'number',
             alias: 'i'
@@ -466,12 +470,30 @@ const startup = async () => {
                             return;
                         }
                         try {
-                            print((await axios.post(TATUM_API_URL + '/v3/record', {data: line.trim(), chain: Currency.ETH}, {
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'x-api-key': process.env.TATUM_API_KEY,
-                                }
-                            })).data);
+                            switch (command[2].toUpperCase()) {
+                                case Currency.QUORUM:
+                                    print((await axios.post(TATUM_API_URL + '/v3/record', {
+                                        data: line.trim(),
+                                        chain: Currency.QUORUM,
+                                        from: command[3],
+                                        to: command[4],
+                                    }, {
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                            'x-api-key': process.env.TATUM_API_KEY,
+                                            'x-quorum-endpoint': flags.xQuorumEndpoint,
+                                        }
+                                    })).data);
+                                    break;
+                                case Currency.ETH:
+                                    print((await axios.post(TATUM_API_URL + '/v3/record', {data: line.trim(), chain: Currency.ETH}, {
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                            'x-api-key': process.env.TATUM_API_KEY,
+                                        }
+                                    })).data);
+                                    break;
+                            }
                         } catch (e) {
                             print(e.response ? e.response.data : e);
                         }

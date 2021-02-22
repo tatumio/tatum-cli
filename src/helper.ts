@@ -14,7 +14,9 @@ Commands
     wallet address create <chain> <xpub> <i> <testnet>  Generate address for given derivation index from xpub.
 
 ## store and obtain data from blockchain, API key is required
-    data create <data from STDIN>    Read data from STDIN and store it to the Ethereum blockchain chosen by the API Key - testnet or mainnet
+    data create <chain> [from] [to] <data from STDIN>    Read data from STDIN and store it to the blockchain:
+                                                            1. Ethereum blockchain chosen by the API Key - testnet or mainnet
+                                                            2. Quorum - from and to addresses must be present in the command
     data detail <chain> <id>    https://tatum.io/apidoc#operation/GetLog
 
 ## Bitcoin blockchain operations, API key is required
@@ -140,9 +142,10 @@ Commands
     offchain transaction stellar create <testnet> <JSON stringified request body>   https://tatum.io/apidoc#operation/XlmTransfer
 
 Options
-    --api-key, -a     Tatum API Key to communicate with Tatum API. Necessary only for API requests to the Tatum.
-    --index, -i       Optional index for off-chain account address methods.
-    --version, -v     Version of the CLI tool.
+    --api-key, -a           Tatum API Key to communicate with Tatum API. Necessary only for API requests to the Tatum.
+    --x-quorum-endpoint, -q URL of the Quorum network
+    --index, -i             Optional index for off-chain account address methods.
+    --version, -v           Version of the CLI tool.
 
 `;
 

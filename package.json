@@ -1,6 +1,6 @@
 {
   "name": "@tatumio/tatum-cli",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "description": "Tatum CLI - Command Line Interface to communicate with blockchain.",
   "main": "dist/index.js",
   "engines": {
@@ -33,7 +33,7 @@
   },
   "homepage": "https://github.com/tatumio/tatum-cli#readme",
   "dependencies": {
-    "@tatumio/tatum": "^1.4.0",
+    "@tatumio/tatum": "^1.5.19",
     "meow": "^7.0.1",
     "readline-sync": "^1.4.10",
     "reflect-metadata": "^0.1.13",
