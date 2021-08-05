@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import readline from 'readline';
 // tslint:disable-next-line:ordered-imports
-import {TATUM_API_URL} from '@tatumio/tatum/dist/src/constants';
+import { TATUM_API_URL } from '@tatumio/tatum/dist/src/constants';
 // tslint:disable-next-line:ordered-imports
 import {
     activateAccount,
@@ -13,6 +13,13 @@ import {
     bcashGetTransaction,
     bcashGetTxForAccount,
     blockAmount,
+    bscBroadcast,
+    bscGetAccountBalance,
+    bscGetAccountBep20Address,
+    bscGetBlock,
+    bscGetCurrentBlock,
+    bscGetTransaction,
+    bscGetTransactionsCount,
     btcBroadcast,
     btcGetBlock,
     btcGetBlockHash,
@@ -27,6 +34,11 @@ import {
     deactivateCustomer,
     deleteBlockedAmount,
     deleteBlockedAmountForAccount,
+    deployMultiToken,
+    deployNFT,
+    burnMultiToken,
+    burnMultiTokenBatch,
+    burnNFT,
     disableCustomer,
     enableCustomer,
     ethBroadcast,
@@ -49,6 +61,10 @@ import {
     getBlockedAmountsByAccountId,
     getCustomer, getDepositAddressesForAccount,
     getLogRecord,
+    getNFTContractAddress,
+    getNFTMetadataURI,
+    getNFTRoyalty,
+    getNFTsByAddress,
     getTransactionsByAccount,
     getTransactionsByCustomer,
     getTransactionsByLedger,
@@ -61,18 +77,31 @@ import {
     ltcGetTransaction,
     ltcGetTxForAccount,
     ltcGetUTXO,
-    mintVirtualCurrency, offchainBroadcast, offchainCancelWithdrawal, offchainCompleteWithdrawal, offchainStoreWithdrawal, removeDepositAddress,
+    mintMultipleNFTWithUri,
+    mintMultiToken,
+    mintMultiTokenBatch,
+    mintNFTWithUri,
+    mintVirtualCurrency,
+    offchainBroadcast, offchainCancelWithdrawal, offchainCompleteWithdrawal, offchainStoreWithdrawal, polygonBroadcast, polygonGetAccountBalance, polygonGetBlock, polygonGetCurrentBlock, polygonGetTransaction, polygonGetTransactionsCount, removeDepositAddress,
     revokeVirtualCurrency, sendBitcoinCashOffchainTransaction,
     sendBitcoinCashTransaction, sendBitcoinOffchainTransaction,
     sendBitcoinTransaction,
+    sendBscOffchainTransaction,
+    sendBscOrBep20Transaction,
+    sendCustomBep20Transaction,
     sendCustomErc20Transaction,
+    sendDeployBep20Transaction,
     sendDeployErc20Transaction, sendEthErc20OffchainTransaction, sendEthOffchainTransaction,
     sendEthOrErc20Transaction, sendLitecoinOffchainTransaction,
     sendLitecoinTransaction,
-    sendStoreDataTransaction, sendXlmOffchainTransaction, sendXlmTransaction, sendXrpOffchainTransaction,
+    sendPolygonDeployErc20SignedTransaction, sendXlmOffchainTransaction, sendXlmTransaction, sendXrpOffchainTransaction,
     sendXrpTransaction,
     storeTransaction,
+    transferMultiToken,
+    transferMultiTokenBatch,
+    transferNFT,
     unfreezeAccount,
+    updateCashbackForAuthorNFT,
     updateCustomer,
     updateVirtualCurrency, xlmBroadcast, xlmGetAccountInfo, xlmGetAccountTransactions,
     xlmGetCurrentLedger, xlmGetFee, xlmGetLedger, xlmGetLedgerTx, xlmGetTransaction,
@@ -83,14 +112,16 @@ import {
     xrpGetCurrentLedger,
     xrpGetFee,
     xrpGetLedger,
-    xrpGetTransaction
+    xrpGetTransaction,
+    sendPolygonTransaction,
+    sendPolygonOffchainTransaction
 } from '@tatumio/tatum';
 import axios from 'axios';
 import meow from 'meow';
-import {Command} from './command';
-import {helpMessage, parse, print} from './helper';
+import { Command } from './command';
+import { helpMessage, parse, print } from './helper';
 
-const {input: command, flags} = meow(helpMessage, {
+const { input: command, flags } = meow(helpMessage, {
     flags: {
         'api-key': {
             type: 'string',
@@ -168,27 +199,27 @@ const startup = async () => {
                         case Command.UNBLOCK:
                             if (command[3].toLowerCase() === Command.ACCOUNT) {
                                 await deleteBlockedAmountForAccount(command[4]);
-                                print({status: 'OK'});
+                                print({ status: 'OK' });
                             } else {
                                 await deleteBlockedAmount(command[3]);
-                                print({status: 'OK'});
+                                print({ status: 'OK' });
                             }
                             break;
                         case Command.FREEZE:
                             await freezeAccount(command[3]);
-                            print({status: 'OK'});
+                            print({ status: 'OK' });
                             break;
                         case Command.UNFREEZE:
                             await unfreezeAccount(command[3]);
-                            print({status: 'OK'});
+                            print({ status: 'OK' });
                             break;
                         case Command.ACTIVATE:
                             await activateAccount(command[3]);
-                            print({status: 'OK'});
+                            print({ status: 'OK' });
                             break;
                         case Command.DEACTIVATE:
                             await deactivateAccount(command[3]);
-                            print({status: 'OK'});
+                            print({ status: 'OK' });
                             break;
                     }
                     break;
@@ -196,19 +227,19 @@ const startup = async () => {
                     switch (command[2].toLowerCase()) {
                         case Command.ENABLE:
                             await enableCustomer(command[3]);
-                            print({status: 'OK'});
+                            print({ status: 'OK' });
                             break;
                         case Command.DISABLE:
                             await disableCustomer(command[3]);
-                            print({status: 'OK'});
+                            print({ status: 'OK' });
                             break;
                         case Command.ACTIVATE:
                             await activateCustomer(command[3]);
-                            print({status: 'OK'});
+                            print({ status: 'OK' });
                             break;
                         case Command.DEACTIVATE:
                             await deactivateCustomer(command[3]);
-                            print({status: 'OK'});
+                            print({ status: 'OK' });
                             break;
                         case Command.LIST:
                             print(await getAllCustomers(parseInt(command[3]), parseInt(command[4])));
@@ -254,7 +285,7 @@ const startup = async () => {
                             break;
                         case Command.UPDATE:
                             await updateVirtualCurrency(parse(command.slice(3).join(' ')));
-                            print({status: 'OK'});
+                            print({ status: 'OK' });
                             break;
                         case Command.MINT:
                             print(await mintVirtualCurrency(parse(command.slice(3).join(' '))));
@@ -284,7 +315,7 @@ const startup = async () => {
                             break;
                         case Command.DELETE:
                             await removeDepositAddress(command[4], command[5]);
-                            print({status: 'OK'});
+                            print({ status: 'OK' });
                             break;
                     }
                     break;
@@ -295,11 +326,11 @@ const startup = async () => {
                             break;
                         case Command.COMPLETE:
                             await offchainCompleteWithdrawal(command[3], command[4]);
-                            print({status: 'OK'});
+                            print({ status: 'OK' });
                             break;
                         case Command.CANCEL:
                             await offchainCancelWithdrawal(command[3], command[4].toLowerCase() === 'true');
-                            print({status: 'OK'});
+                            print({ status: 'OK' });
                             break;
                         case Command.BROADCAST:
                             print(await offchainBroadcast(parse(command.slice(3).join(' '))));
@@ -332,6 +363,12 @@ const startup = async () => {
                                     print(await sendEthOffchainTransaction(command[4].toLowerCase() === 'testnet', parse(command.slice(5).join(' '))));
                                     break;
                             }
+                            break;
+                        case Command.BSC:
+                            print(await sendBscOffchainTransaction(command[5].toLowerCase() === 'testnet', parse(command.slice(6).join(' '))));
+                            break;
+                        case Command.MATIC:
+                            print(await sendPolygonOffchainTransaction(command[5].toLowerCase() === 'testnet', parse(command.slice(6).join(' '))));
                             break;
                     }
                     break;
@@ -409,6 +446,186 @@ const startup = async () => {
                     break;
             }
             break;
+        case Command.BSC:
+            switch (command[1].toLowerCase()) {
+                case Command.BLOCK:
+                    switch (command[2].toLowerCase()) {
+                        case Command.CURRENT:
+                            print(await bscGetCurrentBlock());
+                            break;
+                        case Command.DETAIL:
+                            print(await bscGetBlock(command[3]));
+                            break;
+                    }
+                    break;
+                case Command.ACCOUNT:
+                    switch (command[2].toLowerCase()) {
+                        case Command.BSC:
+                            print(await bscGetAccountBalance(command[3]));
+                            break;
+                        case Command.BEP20:
+                            print(await bscGetAccountBep20Address(command[3], command[4]));
+                            break;
+                    }
+                    break;
+                case Command.TRANSACTION:
+                    switch (command[2].toLowerCase()) {
+                        case Command.CREATE:
+                            switch (command[3].toLowerCase()) {
+                                case Command.BSC:
+                                    print(await sendBscOrBep20Transaction(parse(command.slice(4).join(' '))));
+                                    break;
+                                case Command.BEP20:
+                                    print(await sendCustomBep20Transaction(parse(command.slice(4).join(' '))));
+                                    break;
+                            }
+                            break;
+                        case Command.DEPLOY:
+                            print(await sendDeployBep20Transaction(parse(command.slice(3).join(' '))));
+                            break;
+                        case Command.COUNT:
+                            print(await bscGetTransactionsCount(command[3]));
+                            break;
+                        case Command.BROADCAST:
+                            print(await bscBroadcast(command[3]));
+                            break;
+                        case Command.DETAIL:
+                            print(await bscGetTransaction(command[3]));
+                            break;
+                    }
+                    break;
+            }
+            break;
+        case Command.MATIC:
+            switch (command[1].toLowerCase()) {
+                case Command.BLOCK:
+                    switch (command[2].toLowerCase()) {
+                        case Command.CURRENT:
+                            print(await polygonGetCurrentBlock());
+                            break;
+                        case Command.DETAIL:
+                            print(await polygonGetBlock(command[3]));
+                            break;
+                    }
+                    break;
+                case Command.ACCOUNT:
+                    print(await polygonGetAccountBalance(command[2]));
+                    break;
+                case Command.TRANSACTION:
+                    switch (command[2].toLowerCase()) {
+                        case Command.CREATE:
+                            print(await sendPolygonTransaction(command[3].toLowerCase() === 'testnet', parse(command.slice(4).join(' '))));
+                            break;
+                        case Command.DEPLOY:
+                            print(await sendPolygonDeployErc20SignedTransaction(command[3].toLowerCase() === 'testnet', parse(command.slice(3).join(' '))));
+                            break;
+                        case Command.COUNT:
+                            print(await polygonGetTransactionsCount(command[3]));
+                            break;
+                        case Command.BROADCAST:
+                            print(await polygonBroadcast(command[3]));
+                            break;
+                        case Command.DETAIL:
+                            print(await polygonGetTransaction(command[3]));
+                            break;
+                    }
+                    break;
+            }
+            break;
+        case Command.NFT:
+            switch (command[1].toLowerCase()) {
+                case Command.TRANSACTION:
+                    switch (command[2].toLowerCase()) {
+                        case Command.DEPLOY:
+                            print(await deployNFT(command[3].toLowerCase() === 'testnet', parse(command.slice(4).join(' '))))
+                            break;
+                        case Command.MINT:
+                            print(await mintNFTWithUri(command[3].toLowerCase() === 'testnet', parse(command.slice(4).join(' '))))
+                            break;
+                        case Command.MINTBATCH:
+                            print(await mintMultipleNFTWithUri(command[3].toLowerCase() === 'testnet', parse(command.slice(4).join(' '))))
+                        case Command.BURN:
+                            print(await burnNFT(command[3].toLowerCase() === 'testnet', parse(command.slice(4).join(' '))))
+                            break;
+                        case Command.TRANSFER:
+                            print(await transferNFT(command[3].toLowerCase() === 'testnet', parse(command.slice(4).join(' '))));
+                            break;
+                        case Command.UPDATE:
+                            print(updateCashbackForAuthorNFT(command[3].toLowerCase() === 'testnet', parse(command.slice(4).join(' '))));
+                            break;
+                    }
+                    break;
+                case Command.GET:
+                    switch (command[2].toLowerCase()) {
+                        case Command.ADDRESS:
+                            // @ts-ignore
+                            print(await getNFTsByAddress(command[3], command[4], command[5]));
+                        case Command.CONTRACTADDRESS:
+                            // @ts-ignore
+                            print(await getNFTContractAddress(command[3], command[4]));
+                            break;
+                        case Command.URI:
+                            // @ts-ignore
+                            print(await getNFTMetadataURI(command[3], command[4], command[5]));
+                            break;
+                        case Command.ROYALTY:
+                            // @ts-ignore
+                            print(await getNFTRoyalty(command[3], command[4], command[5]));
+                            break;
+                    }
+                    break;
+            }
+            break;
+        case Command.MULTITOKEN:
+            switch (command[1].toLowerCase()) {
+                case Command.TRANSACTION:
+                    switch (command[2].toLowerCase()) {
+                        case Command.DEPLOY:
+                            print(await deployMultiToken(command[3].toLowerCase() === 'testnet', parse(command.slice(4).join(' '))))
+                            break;
+                        case Command.MINT:
+                            print(await mintMultiToken(command[3].toLowerCase() === 'testnet', parse(command.slice(4).join(' '))))
+                            break;
+                        case Command.MINTBATCH:
+                            print(await mintMultiTokenBatch(command[3].toLowerCase() === 'testnet', parse(command.slice(4).join(' '))))
+                        case Command.BURN:
+                            print(await burnMultiToken(command[3].toLowerCase() === 'testnet', parse(command.slice(4).join(' '))))
+                            break;
+                        case Command.BURNBATCH:
+                            print(await burnMultiTokenBatch(command[3].toLowerCase() === 'testnet', parse(command.slice(4).join(' '))))
+                            break;
+                        case Command.TRANSFER:
+                            print(await transferMultiToken(command[3].toLowerCase() === 'testnet', parse(command.slice(4).join(' '))));
+                            break;
+                        case Command.TRANSFERBATCH:
+                            print(await transferMultiTokenBatch(command[3].toLowerCase() === 'testnet', parse(command.slice(4).join(' '))));
+                            break;
+                    }
+                    break;
+                case Command.GET:
+                    switch (command[2].toLowerCase()) {
+                        case Command.BALANCE:
+                            // @ts-ignore
+                            print(await getMultiTokensBalance(command[3], command[4], command[5], command[6]));
+                        case Command.BALANCEBATCH:
+                            // @ts-ignore
+                            print(await getMultiTokensBatchBalance(command[3], command[4], command[5], command[6]));
+                        case Command.TRANSACTION:
+                            // @ts-ignore
+                            print(await getMultiTokenTransaction(command[3], command[4], command[5]));
+                        case Command.CONTRACTADDRESS:
+                            // @ts-ignore
+                            print(await getMultiTokenContractAddress(command[3], command[4]));
+                            break;
+                        case Command.METADATA:
+                            // @ts-ignore
+                            print(await getMultiTokenMetadata(command[3], command[4], command[5]));
+                            break;
+                    }
+                    break;
+            }
+            break;
+
         case Command.ETHEREUM:
             switch (command[1].toLowerCase()) {
                 case Command.BLOCK:
@@ -436,10 +653,10 @@ const startup = async () => {
                         case Command.CREATE:
                             switch (command[3].toLowerCase()) {
                                 case Command.ETHEREUM:
-                                    print(await sendEthOrErc20Transaction(command[4].toLowerCase() === 'testnet', parse(command.slice(5).join(' '))));
+                                    print(await sendEthOrErc20Transaction(parse(command.slice(5).join(' '))));
                                     break;
                                 case Command.ERC20:
-                                    print(await sendCustomErc20Transaction(command[4].toLowerCase() === 'testnet', parse(command.slice(5).join(' '))));
+                                    print(await sendCustomErc20Transaction(parse(command.slice(5).join(' '))));
                                     break;
                             }
                             break;
@@ -447,7 +664,7 @@ const startup = async () => {
                             print(await ethGetAccountTransactions(command[3], parseInt(command[4]), parseInt(command[5])));
                             break;
                         case Command.DEPLOY:
-                            print(await sendDeployErc20Transaction(command[4].toLowerCase() === 'testnet', parse(command.slice(5).join(' '))));
+                            print(await sendDeployErc20Transaction(parse(command.slice(5).join(' '))));
                             break;
                         case Command.COUNT:
                             print(await ethGetTransactionsCount(command[3]));
@@ -486,7 +703,7 @@ const startup = async () => {
                                     })).data);
                                     break;
                                 case Currency.ETH:
-                                    print((await axios.post(TATUM_API_URL + '/v3/record', {data: line.trim(), chain: Currency.ETH}, {
+                                    print((await axios.post(TATUM_API_URL + '/v3/record', { data: line.trim(), chain: Currency.ETH }, {
                                         headers: {
                                             'Content-Type': 'application/json',
                                             'x-api-key': process.env.TATUM_API_KEY,
