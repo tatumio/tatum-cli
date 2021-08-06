@@ -42,6 +42,54 @@ Commands
     ethereum transaction create erc20 <testnet> <JSON stringified request body>     https://tatum.io/apidoc#operation/EthBlockchainTransferErc20
     ethereum transaction deploy erc20 <testnet> <JSON stringified request body>     https://tatum.io/apidoc#operation/EthDeployErc20Blockchain
 
+## BSC blockchain operations, API key is required
+    bsc block current  https://tatum.io/apidoc#operation/BscGetCurrentBlock
+    bsc block detail <hashOrHeight>    https://tatum.io/apidoc#operation/BscGetBlock
+    bsc account balance bsc <address>     https://tatum.io/apidoc#operation/BscGetBalance
+    bsc account balance bep20 <address> <contractAddress>  https://tatum.io/apidoc#operation/BscBep20GetBalance
+    bsc transaction detail <hash>  https://tatum.io/apidoc#operation/BscGetTransaction
+    bsc transaction count <address>    https://tatum.io/apidoc#operation/BscGetTransactionCount
+    bsc transaction broadcast <data>   https://tatum.io/apidoc#operation/BscBroadcast
+    bsc transaction create bsc <testnet> <JSON stringified request body>  https://tatum.io/apidoc#operation/BscBlockchainTransfer
+    bsc transaction create bep20 <testnet> <JSON stringified request body>     https://tatum.io/apidoc#operation/BscBlockchainTransferBep20
+    bsc transaction deploy <JSON stringified request body>     https://tatum.io/apidoc#operation/BscDeployBep20Blockchain
+
+## Polygon/Matic blockchain operations, API key is required
+    matic block current  https://tatum.io/apidoc#operation/PolygonGetCurrentBlock
+    matic block detail <hashOrHeight>    https://tatum.io/apidoc#operation/PolygonGetBlock
+    matic account <address>  https://tatum.io/apidoc#operation/PolygonGetBalance
+    matic transaction detail <hash>  https://tatum.io/apidoc#operation/PolygonGetTransaction
+    matic transaction count <address>    https://tatum.io/apidoc#operation/PolygonGetTransactionCount
+    matic transaction broadcast <data>   https://tatum.io/apidoc#operation/PolygonBroadcast
+    matic transaction create <testnet> <JSON stringified request body> https://tatum.io/apidoc#operation/PolygonBlockchainTransfer
+    matic transaction deploy <JSON stringified request body>    https://tatum.io/apidoc#operation/PolygonBlockchainTransfer
+
+## NFT blockchain operations, API key is required
+    nft get address <chain> <contractaddress> <address>
+    nft get contractaddress <chain> <txid>
+    nft get uri <chain> <contractaddress> <tokenid>
+    nft get royalty <chain> <contractaddress> <tokenid>
+    nft transaction deploy <testnet> <JSON stringified request body> https://tatum.io/apidoc#operation/NftDeployErc721
+    nft transaction mint <testnet> <JSON stringified request body> https://tatum.io/apidoc#operation/NftMintErc721
+    nft transaction mintbatch <testnet> <JSON stringified request body> https://tatum.io/apidoc#operation/NftMintMultipleErc721
+    nft transaction burn <testnet> <JSON stringified request body> https://tatum.io/apidoc#operation/NftBurnErc721
+    nft transaction transfer <testnet> <JSON stringified request body> https://tatum.io/apidoc#operation/NftTransferErc721
+    nft transaction update <testnet> <JSON stringified request body> https://tatum.io/apidoc#operation/NftUpdateCashbackErc721
+    
+## MultiToken blockchain operations, API key is required
+    multitoken get balance <chain> <contractaddress> <address>  https://tatum.io/apidoc#operation/MultiTokenGetBalance
+    multitoken get balancebatch <chain> <contractaddress> <address> https://tatum.io/apidoc#operation/MultiTokenGetBalanceBatch
+    multitoken get contractaddress <chain> <txid> https://tatum.io/apidoc#operation/MultiTokenGetContractAddress
+    multitoken get transaction <chain> <txid> https://tatum.io/apidoc#operation/MultiTokenGetTransaction
+    multitoken get metadata <chain> <contractaddress> <tokenid> https://tatum.io/apidoc#operation/MultiTokenGetMetadata
+    multitoken transaction deploy <testnet> <JSON stringified request body> https://tatum.io/apidoc#operation/DeployMultiToken
+    multitoken transaction mint <testnet> <JSON stringified request body> https://tatum.io/apidoc#operation/MintMultiToken
+    multitoken transaction mintmultiple <testnet> <JSON stringified request body> https://tatum.io/apidoc#operation/MintMultiTokenBatch
+    multitoken transaction burn <testnet> <JSON stringified request body> https://tatum.io/apidoc#operation/BurnMultiToken
+    multitoken transaction burnmultiple <testnet> <JSON stringified request body>https://tatum.io/apidoc#operation/BurnMultiTokenBatch
+    multitoken transaction transfer <testnet> <JSON stringified request body> https://tatum.io/apidoc#operation/TransferMultiToken
+    multitoken transaction transfermultiple <testnet> <JSON stringified request body> https://tatum.io/apidoc#operation/TransferMultiTokenBatch
+
 ## Litecoin blockchain operations, API key is required
     litecoin block current  https://tatum.io/apidoc#operation/LtcGetBlockChainInfo
     litecoin block hash <height>    https://tatum.io/apidoc#operation/LtcGetBlockHash
