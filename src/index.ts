@@ -114,7 +114,12 @@ import {
     xrpGetLedger,
     xrpGetTransaction,
     sendPolygonTransaction,
-    sendPolygonOffchainTransaction
+    sendPolygonOffchainTransaction,
+    getMultiTokensBalance,
+    getMultiTokensBatchBalance,
+    getMultiTokenTransaction,
+    getMultiTokenContractAddress,
+    getMultiTokenMetadata
 } from '@tatumio/tatum';
 import axios from 'axios';
 import meow from 'meow';
@@ -556,21 +561,18 @@ const startup = async () => {
                     }
                     break;
                 case Command.GET:
+                    let currencyString = command[3] as keyof typeof Currency;
                     switch (command[2].toLowerCase()) {
                         case Command.ADDRESS:
-                            // @ts-ignore
-                            print(await getNFTsByAddress(command[3], command[4], command[5]));
+                            print(await getNFTsByAddress(Currency[currencyString], command[4], command[5]));
                         case Command.CONTRACTADDRESS:
-                            // @ts-ignore
-                            print(await getNFTContractAddress(command[3], command[4]));
+                            print(await getNFTContractAddress(Currency[currencyString], command[4]));
                             break;
                         case Command.URI:
-                            // @ts-ignore
-                            print(await getNFTMetadataURI(command[3], command[4], command[5]));
+                            print(await getNFTMetadataURI(Currency[currencyString], command[4], command[5]));
                             break;
                         case Command.ROYALTY:
-                            // @ts-ignore
-                            print(await getNFTRoyalty(command[3], command[4], command[5]));
+                            print(await getNFTRoyalty(Currency[currencyString], command[4], command[5]));
                             break;
                     }
                     break;
@@ -603,23 +605,19 @@ const startup = async () => {
                     }
                     break;
                 case Command.GET:
+                    let currencyString = command[3] as keyof typeof Currency;
                     switch (command[2].toLowerCase()) {
                         case Command.BALANCE:
-                            // @ts-ignore
-                            print(await getMultiTokensBalance(command[3], command[4], command[5], command[6]));
+                            print(await getMultiTokensBalance(Currency[currencyString], command[4], command[5], command[6]));
                         case Command.BALANCEBATCH:
-                            // @ts-ignore
-                            print(await getMultiTokensBatchBalance(command[3], command[4], command[5], command[6]));
+                            print(await getMultiTokensBatchBalance(Currency[currencyString], command[4], command[5], command[6]));
                         case Command.TRANSACTION:
-                            // @ts-ignore
-                            print(await getMultiTokenTransaction(command[3], command[4], command[5]));
+                            print(await getMultiTokenTransaction(Currency[currencyString], command[4]));
                         case Command.CONTRACTADDRESS:
-                            // @ts-ignore
-                            print(await getMultiTokenContractAddress(command[3], command[4]));
+                            print(await getMultiTokenContractAddress(Currency[currencyString], command[4]));
                             break;
                         case Command.METADATA:
-                            // @ts-ignore
-                            print(await getMultiTokenMetadata(command[3], command[4], command[5]));
+                            print(await getMultiTokenMetadata(Currency[currencyString], command[4], command[5]));
                             break;
                     }
                     break;
