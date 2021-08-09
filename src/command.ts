@@ -45,6 +45,8 @@ export enum Command {
     MINTBATCH = 'mintbatch',
     BURNBATCH = 'burnbatch',
     TRANSFERBATCH = 'transferbatch',
+    XDC = 'XDC',
+    GAS = "GAS",
     BALANCEBATCH = 'balancebatch',
     METADATA = 'metadata',
     BURN = 'burn',

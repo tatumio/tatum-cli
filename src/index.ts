@@ -119,7 +119,18 @@ import {
     getMultiTokensBatchBalance,
     getMultiTokenTransaction,
     getMultiTokenContractAddress,
-    getMultiTokenMetadata
+    getMultiTokenMetadata,
+    xdcGetCurrentBlock,
+    xdcGetBlock,
+    xdcGetAccountBalance,
+    xdcGetAccountErc20Balance,
+    sendXdcOrErc20Transaction,
+    sendXdcCustomErc20Transaction,
+    xdcGetTransaction,
+    xdcGetTransactionsCount,
+    xdcBroadcast,
+    xdcEstimateGas,
+    sendXdcOffchainTransaction
 } from '@tatumio/tatum';
 import axios from 'axios';
 import meow from 'meow';
@@ -358,6 +369,9 @@ const startup = async () => {
                             break;
                         case Command.XLM:
                             print(await sendXlmOffchainTransaction(command[4].toLowerCase() === 'testnet', parse(command.slice(5).join(' '))));
+                            break;
+                        case Command.XDC:
+                            print(await sendXdcOffchainTransaction(command[4].toLowerCase() === 'testnet', parse(command.slice(5).join(' '))));
                             break;
                         case Command.ETHEREUM:
                             switch (command[3].toLowerCase()) {
@@ -623,7 +637,56 @@ const startup = async () => {
                     break;
             }
             break;
-
+        case Command.XDC:
+            switch (command[1].toLowerCase()) {
+                case Command.BLOCK:
+                    switch (command[2].toLowerCase()) {
+                        case Command.CURRENT:
+                            print(await xdcGetCurrentBlock());
+                            break;
+                        case Command.DETAIL:
+                            print(await xdcGetBlock(command[3]));
+                            break;
+                    }
+                    break;
+                case Command.ACCOUNT:
+                    switch (command[3].toLowerCase()) {
+                        case Command.XDC:
+                            print(await xdcGetAccountBalance(command[4]));
+                            break;
+                        case Command.ERC20:
+                            print(await xdcGetAccountErc20Balance(command[4], command[5]));
+                            break;
+                    }
+                    break;
+                case Command.TRANSACTION:
+                    switch (command[2].toLowerCase()) {
+                        case Command.CREATE:
+                            switch (command[3].toLowerCase()) {
+                                case Command.XDC:
+                                    print(await sendXdcOrErc20Transaction(parse(command.slice(5).join(' '))));
+                                    break;
+                                case Command.ERC20:
+                                    print(await sendXdcCustomErc20Transaction(parse(command.slice(5).join(' '))));
+                                    break;
+                            }
+                            break;
+                        case Command.GAS:
+                            print(await xdcEstimateGas(parse(command.slice(3).join(' '))));
+                            break;
+                        case Command.COUNT:
+                            print(await xdcGetTransactionsCount(command[3]));
+                            break;
+                        case Command.BROADCAST:
+                            print(await xdcBroadcast(command[3]));
+                            break;
+                        case Command.DETAIL:
+                            print(await xdcGetTransaction(command[3]));
+                            break;
+                    }
+                    break;
+            }
+            break;
         case Command.ETHEREUM:
             switch (command[1].toLowerCase()) {
                 case Command.BLOCK:
