@@ -130,7 +130,14 @@ import {
     xdcGetTransactionsCount,
     xdcBroadcast,
     xdcEstimateGas,
-    sendXdcOffchainTransaction
+    sendXdcOffchainTransaction,
+    dogeGetCurrentBlock,
+    dogeGetBlockHash,
+    dogeGetBlock,
+    sendDogecoinTransaction,
+    dogeGetUTXO,
+    dogeBroadcast,
+    dogeGetTransaction
 } from '@tatumio/tatum';
 import axios from 'axios';
 import meow from 'meow';
@@ -424,6 +431,39 @@ const startup = async () => {
                             break;
                         case Command.DETAIL:
                             print(await btcGetTransaction(command[3]));
+                            break;
+                    }
+                    break;
+            }
+            break;
+        case Command.DOGECOIN:
+            switch (command[1].toLowerCase()) {
+                case Command.BLOCK:
+                    switch (command[2].toLowerCase()) {
+                        case Command.CURRENT:
+                            print(await dogeGetCurrentBlock());
+                            break;
+                        case Command.HASH:
+                            print(await dogeGetBlockHash(parseInt(command[3])));
+                            break;
+                        case Command.DETAIL:
+                            print(await dogeGetBlock(command[3]));
+                            break;
+                    }
+                    break;
+                case Command.TRANSACTION:
+                    switch (command[2].toLowerCase()) {
+                        case Command.CREATE:
+                            print(await sendDogecoinTransaction(parse(command.slice(4).join(' '))));
+                            break;
+                        case Command.UTXO:
+                            print(await dogeGetUTXO(command[3], parseInt(command[4])));
+                            break;
+                        case Command.BROADCAST:
+                            print(await dogeBroadcast(command[3]));
+                            break;
+                        case Command.DETAIL:
+                            print(await dogeGetTransaction(command[3]));
                             break;
                     }
                     break;

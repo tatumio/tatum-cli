@@ -28,6 +28,16 @@ Commands
     bitcoin transaction utxo <hash> <i>     https://tatum.io/apidoc#operation/BtcGetUTXO
     bitcoin transaction broadcast <data>    https://tatum.io/apidoc#operation/BtcBroadcast
     bitcoin transaction create <testnet> <JSON stringified request body>    https://tatum.io/apidoc#operation/BtcTransferBlockchain
+
+## Dogecoin blockchain operations, API key is required
+    dogecoin block current    https://tatum.io/apidoc#operation/DogeGetBlockChainInfo
+    dogecoin block hash <height>     https://tatum.io/apidoc#operation/DogeGetBlockHash
+    dogecoin block detail <hashOrHeight> https://tatum.io/apidoc#operation/DogeGetBlock
+    dogecoin transaction detail <hash>   https://tatum.io/apidoc#operation/DogeGetRawTransaction
+    dogecoin transaction utxo <hash> <i> https://tatum.io/apidoc#operation/DogeGetUTXO
+    dogecoin transaction broadcast <data> https://tatum.io/apidoc#operation/DogeBroadcast
+    dogecoin transaction create <JSON stringified request body>  https://tatum.io/apidoc#operation/DogeTransferBlockchain
+
 ## XDC blockchain operations, API key is required
     xdc block current  https://tatum.io/apidoc#operation/XdcGetCurrentBlock
     xdc block detail <hashOrHeight>   https://tatum.io/apidoc#operation/XdcGetBlock

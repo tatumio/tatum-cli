@@ -55,6 +55,7 @@ export enum Command {
     CUSTOMER = 'customer',
     OFFCHAIN = 'offchain',
     BITCOIN = 'bitcoin',
+    DOGECOIN = 'dogecoin',
     LITECOIN = 'litecoin',
     ETHEREUM = 'ethereum',
     VECHAIN = 'vechain',
