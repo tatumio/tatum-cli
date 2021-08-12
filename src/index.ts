@@ -137,7 +137,38 @@ import {
     sendDogecoinTransaction,
     dogeGetUTXO,
     dogeBroadcast,
-    dogeGetTransaction
+    dogeGetTransaction,
+    celoGetCurrentBlock,
+    celoGetBlock,
+    celoGetAccountBalance,
+    celoGetTransaction,
+    celoGetTransactionsCount,
+    celoBroadcast,
+    sendCeloOrcUsdTransaction,
+    sendCeloDeployErc20Transaction,
+    sendCeloStoreDataSignedTransaction,
+    sendStoreDataTransaction,
+    sendStoreDataQuorumTransaction,
+    sendPolygonStoreDataTransaction,
+    sendXdcStoreDataTransaction,
+    sendOneTransaction,
+    sendOneDeploy20SignedTransaction,
+    oneGetCurrentBlock,
+    oneGetBlock,
+    oneGetBalance,
+    oneGetTransactionCount,
+    oneBroadcast,
+    oneGetTransaction,
+    sendOneStoreDataTransaction,
+    sendDogecoinOffchainTransaction,
+    scryptaGetCurrentBlock,
+    scryptaGetBlockHash,
+    scryptaGetBlock,
+    sendScryptaTransaction,
+    scryptaGetUTXO,
+    scryptaBroadcast,
+    scryptaGetTransaction,
+    sendCeloOffchainTransaction
 } from '@tatumio/tatum';
 import axios from 'axios';
 import meow from 'meow';
@@ -396,6 +427,15 @@ const startup = async () => {
                         case Command.MATIC:
                             print(await sendPolygonOffchainTransaction(command[5].toLowerCase() === 'testnet', parse(command.slice(6).join(' '))));
                             break;
+                        case Command.DOGECOIN:
+                            print(await sendDogecoinOffchainTransaction(command[5].toLowerCase() === 'testnet', parse(command.slice(6).join(' '))));
+                            break;
+                        case Command.XDC:
+                            print(await sendXdcOffchainTransaction(command[5].toLowerCase() === 'testnet', parse(command.slice(6).join(' '))));
+                            break;
+                        case Command.CELO:
+                            print(await sendCeloOffchainTransaction(command[5].toLowerCase() === 'testnet', parse(command.slice(6).join(' '))));
+                            break;
                     }
                     break;
             }
@@ -454,7 +494,7 @@ const startup = async () => {
                 case Command.TRANSACTION:
                     switch (command[2].toLowerCase()) {
                         case Command.CREATE:
-                            print(await sendDogecoinTransaction(parse(command.slice(4).join(' '))));
+                            print(await sendDogecoinTransaction(parse(command.slice(3).join(' '))));
                             break;
                         case Command.UTXO:
                             print(await dogeGetUTXO(command[3], parseInt(command[4])));
@@ -464,6 +504,39 @@ const startup = async () => {
                             break;
                         case Command.DETAIL:
                             print(await dogeGetTransaction(command[3]));
+                            break;
+                    }
+                    break;
+            }
+            break;
+        case Command.SCRYPTA:
+            switch (command[1].toLowerCase()) {
+                case Command.BLOCK:
+                    switch (command[2].toLowerCase()) {
+                        case Command.CURRENT:
+                            print(await scryptaGetCurrentBlock());
+                            break;
+                        case Command.HASH:
+                            print(await scryptaGetBlockHash(parseInt(command[3])));
+                            break;
+                        case Command.DETAIL:
+                            print(await scryptaGetBlock(command[3]));
+                            break;
+                    }
+                    break;
+                case Command.TRANSACTION:
+                    switch (command[2].toLowerCase()) {
+                        case Command.CREATE:
+                            print(await sendScryptaTransaction(command[3].toLowerCase() === 'testnet',parse(command.slice(4).join(' '))));
+                            break;
+                        case Command.UTXO:
+                            print(await scryptaGetUTXO(command[3], parseInt(command[4])));
+                            break;
+                        case Command.BROADCAST:
+                            print(await scryptaBroadcast(command[3]));
+                            break;
+                        case Command.DETAIL:
+                            print(await scryptaGetTransaction(command[3]));
                             break;
                     }
                     break;
@@ -780,6 +853,78 @@ const startup = async () => {
                     break;
             }
             break;
+        case Command.ONE:
+            switch (command[1].toLowerCase()) {
+                case Command.BLOCK:
+                    switch (command[2].toLowerCase()) {
+                        case Command.CURRENT:
+                            print(await oneGetCurrentBlock());
+                            break;
+                        case Command.DETAIL:
+                            print(await oneGetBlock(command[3]));
+                            break;
+                    }
+                    break;
+                case Command.ACCOUNT:
+                    print(await oneGetBalance(command[2]));
+                    break;
+                case Command.TRANSACTION:
+                    switch (command[2].toLowerCase()) {
+                        case Command.CREATE:
+                            print(await sendOneTransaction(command[3].toLowerCase() === 'testnet',parse(command.slice(4).join(' '))));
+                            break;
+                        case Command.DEPLOY:
+                            print(await sendOneDeploy20SignedTransaction(command[3].toLowerCase() === 'testnet',parse(command.slice(4).join(' '))));
+                            break;
+                        case Command.COUNT:
+                            print(await oneGetTransactionCount(command[3]));
+                            break;
+                        case Command.BROADCAST:
+                            print(await oneBroadcast(command[3]));
+                            break;
+                        case Command.DETAIL:
+                            print(await oneGetTransaction(command[3]));
+                            break;
+                    }
+                    break;
+            }
+            break;
+        case Command.CELO:
+            switch (command[1].toLowerCase()) {
+                case Command.BLOCK:
+                    switch (command[2].toLowerCase()) {
+                        case Command.CURRENT:
+                            print(await celoGetCurrentBlock());
+                            break;
+                        case Command.DETAIL:
+                            print(await celoGetBlock(command[3]));
+                            break;
+                    }
+                    break;
+                case Command.ACCOUNT:
+                    print(await celoGetAccountBalance(command[2]));
+                    break;
+                case Command.TRANSACTION:
+                    switch (command[2].toLowerCase()) {
+                        case Command.CREATE:
+                            print(await sendCeloOrcUsdTransaction(command[3].toLowerCase() === 'testnet',parse(command.slice(4).join(' '))));
+                            break;
+                        case Command.DEPLOY:
+                            print(await sendCeloDeployErc20Transaction(command[3].toLowerCase() === 'testnet',parse(command.slice(4).join(' '))));
+                            break;
+                        case Command.COUNT:
+                            print(await celoGetTransactionsCount(command[3]));
+                            break;
+                        case Command.BROADCAST:
+                            print(await celoBroadcast(command[3]));
+                            break;
+                        case Command.DETAIL:
+                            print(await celoGetTransaction(command[3]));
+                            break;
+                    }
+                    break;
+            }
+            break;
         case Command.DATA:
             switch (command[1].toLowerCase()) {
                 case Command.CREATE:
@@ -790,27 +935,23 @@ const startup = async () => {
                         try {
                             switch (command[2].toUpperCase()) {
                                 case Currency.QUORUM:
-                                    print((await axios.post(TATUM_API_URL + '/v3/record', {
-                                        data: line.trim(),
-                                        chain: Currency.QUORUM,
-                                        from: command[3],
-                                        to: command[4],
-                                    }, {
-                                        headers: {
-                                            'Content-Type': 'application/json',
-                                            'x-api-key': process.env.TATUM_API_KEY,
-                                            'x-quorum-endpoint': flags.xQuorumEndpoint,
-                                        }
-                                    })).data);
+                                    print(await sendStoreDataQuorumTransaction(parse(command.slice(3).join(' ')),command[4]));
                                     break;
                                 case Currency.ETH:
-                                    print((await axios.post(TATUM_API_URL + '/v3/record', { data: line.trim(), chain: Currency.ETH }, {
-                                        headers: {
-                                            'Content-Type': 'application/json',
-                                            'x-api-key': process.env.TATUM_API_KEY,
-                                        }
-                                    })).data);
+                                    print(await sendStoreDataTransaction(parse(command.slice(3).join(' '))));
                                     break;
+                                case Currency.CELO:
+                                    print(await sendCeloStoreDataSignedTransaction(command[3].toLowerCase() === 'testnet',parse(command.slice(4).join(' '))));
+                                    break;
+                                case Currency.MATIC:
+                                    print(await sendPolygonStoreDataTransaction(command[3].toLowerCase() === 'testnet', parse(command.slice(4).join(' '))));
+                                    break;
+                                case Currency.XDC:
+                                    print(await sendXdcStoreDataTransaction(parse(command.slice(3).join(' '))));
+                                    break;  
+                                case Currency.ONE:
+                                    print(await sendOneStoreDataTransaction(command[3].toLowerCase() === 'testnet',parse(command.slice(4).join(' '))));
+                                    break;                    
                             }
                         } catch (e) {
                             print(e.response ? e.response.data : e);

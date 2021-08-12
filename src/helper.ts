@@ -17,6 +17,7 @@ Commands
     data create <chain> [from] [to] <data from STDIN>    Read data from STDIN and store it to the blockchain:
                                                             1. Ethereum blockchain chosen by the API Key - testnet or mainnet
                                                             2. Quorum - from and to addresses must be present in the command
+                                                            3. Matic - testnet is required before the body (data create matic testnet <body>)
     data detail <chain> <id>    https://tatum.io/apidoc#operation/GetLog
 
 ## Bitcoin blockchain operations, API key is required
@@ -38,6 +39,15 @@ Commands
     dogecoin transaction broadcast <data> https://tatum.io/apidoc#operation/DogeBroadcast
     dogecoin transaction create <JSON stringified request body>  https://tatum.io/apidoc#operation/DogeTransferBlockchain
 
+## Scrypta blockchain operations, API key is required
+    scrypta block current    https://tatum.io/apidoc#operation/DogeGetBlockChainInfo
+    scrypta block hash <height>     https://tatum.io/apidoc#operation/DogeGetBlockHash
+    scrypta block detail <hashOrHeight> https://tatum.io/apidoc#operation/DogeGetBlock
+    scrypta transaction detail <hash>   https://tatum.io/apidoc#operation/DogeGetRawTransaction
+    scrypta transaction utxo <hash> <i> https://tatum.io/apidoc#operation/DogeGetUTXO
+    scrypta transaction broadcast <data> https://tatum.io/apidoc#operation/DogeBroadcast
+    scrypta transaction create <testnet> <JSON stringified request body>  https://tatum.io/apidoc#operation/DogeTransferBlockchain
+
 ## XDC blockchain operations, API key is required
     xdc block current  https://tatum.io/apidoc#operation/XdcGetCurrentBlock
     xdc block detail <hashOrHeight>   https://tatum.io/apidoc#operation/XdcGetBlock
@@ -47,8 +57,8 @@ Commands
     xdc transaction count <address>    
     xdc transaction broadcast <data>   https://tatum.io/apidoc#operation/XdcBroadcast
     xdc transaction gas <estimateGasObj>  https://tatum.io/apidoc#operation/XdcEstimateGas
-    xdc transaction create xdc <testnet> <JSON stringified request body>  https://tatum.io/apidoc#operation/XdcBlockchainTransfer
-    xdc transaction create erc20 <testnet> <JSON stringified request body>    
+    xdc transaction create xdc <JSON stringified request body>  https://tatum.io/apidoc#operation/XdcBlockchainTransfer
+    xdc transaction create erc20 <JSON stringified request body>    
 
 ## Ethereum blockchain operations, API key is required
     ethereum block current  https://tatum.io/apidoc#operation/EthGetCurrentBlock
@@ -59,9 +69,29 @@ Commands
     ethereum transaction count <address>    https://tatum.io/apidoc#operation/EthGetTransactionCount
     ethereum transaction address <address> <pageSize> <offset>  https://tatum.io/apidoc#operation/EthGetTransactionByAddress
     ethereum transaction broadcast <data>   https://tatum.io/apidoc#operation/EthBroadcast
-    ethereum transaction create ethereum <testnet> <JSON stringified request body>  https://tatum.io/apidoc#operation/EthBlockchainTransfer
-    ethereum transaction create erc20 <testnet> <JSON stringified request body>     https://tatum.io/apidoc#operation/EthBlockchainTransferErc20
-    ethereum transaction deploy erc20 <testnet> <JSON stringified request body>     https://tatum.io/apidoc#operation/EthDeployErc20Blockchain
+    ethereum transaction create ethereum <JSON stringified request body>  https://tatum.io/apidoc#operation/EthBlockchainTransfer
+    ethereum transaction create erc20 <JSON stringified request body>     https://tatum.io/apidoc#operation/EthBlockchainTransferErc20
+    ethereum transaction deploy erc20 <JSON stringified request body>     https://tatum.io/apidoc#operation/EthDeployErc20Blockchain
+
+## Celo blockchain operations, API key is required
+    celo block current  https://tatum.io/apidoc#operation/CeloGetCurrentBlock
+    celo block detail <hashOrHeight>    https://tatum.io/apidoc#operation/CeloGetBlock
+    celo account <address>    https://tatum.io/apidoc#operation/CeloGetBalance
+    celo transaction detail <hash>  https://tatum.io/apidoc#operation/CeloGetTransaction
+    celo transaction count <address>    https://tatum.io/apidoc#operation/CeloGetTransactionCount
+    celo transaction broadcast <data>  https://tatum.io/apidoc#operation/CeloBroadcast
+    celo transaction create <testnet> <JSON stringified request body>  https://tatum.io/apidoc#operation/CeloBlockchainTransfer
+    celo transaction deploy <testnet> <JSON stringified request body>     
+
+## Harmony/One blockchain operations, API key is required
+    one block current  https://tatum.io/apidoc#operation/OneGetCurrentBlock
+    one block detail <hashOrHeight>   https://tatum.io/apidoc#operation/OneGetBlock
+    one account <address>    https://tatum.io/apidoc#operation/OneGetBalance
+    one transaction detail <hash> https://tatum.io/apidoc#operation/OneGetTransaction
+    one transaction count <address>    https://tatum.io/apidoc#operation/OneGetTransactionCount
+    one transaction broadcast <data>  https://tatum.io/apidoc#operation/OneBroadcast
+    one transaction create <testnet> <JSON stringified request body>  https://tatum.io/apidoc#operation/OneBlockchainTransfer
+    one transaction deploy <testnet> <JSON stringified request body>     
 
 ## BSC blockchain operations, API key is required
     bsc block current  https://tatum.io/apidoc#operation/BscGetCurrentBlock
@@ -71,8 +101,8 @@ Commands
     bsc transaction detail <hash>  https://tatum.io/apidoc#operation/BscGetTransaction
     bsc transaction count <address>    https://tatum.io/apidoc#operation/BscGetTransactionCount
     bsc transaction broadcast <data>   https://tatum.io/apidoc#operation/BscBroadcast
-    bsc transaction create bsc <testnet> <JSON stringified request body>  https://tatum.io/apidoc#operation/BscBlockchainTransfer
-    bsc transaction create bep20 <testnet> <JSON stringified request body>     https://tatum.io/apidoc#operation/BscBlockchainTransferBep20
+    bsc transaction create bsc <JSON stringified request body>  https://tatum.io/apidoc#operation/BscBlockchainTransfer
+    bsc transaction create bep20 <JSON stringified request body>     https://tatum.io/apidoc#operation/BscBlockchainTransferBep20
     bsc transaction deploy <JSON stringified request body>     https://tatum.io/apidoc#operation/BscDeployBep20Blockchain
 
 ## Polygon/Matic blockchain operations, API key is required
