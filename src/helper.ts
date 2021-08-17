@@ -19,7 +19,10 @@ Commands
                                                             2. Quorum - from and to addresses must be present in the command
                                                             3. Matic - testnet is required before the body (data create matic testnet <body>)
     data detail <chain> <id>    https://tatum.io/apidoc#operation/GetLog
-
+## IPFS blockchain operations, API key is required
+    ipfs store <file> <fileName> https://tatum.io/apidoc#operation/StoreIPFS
+    ipfs get <fileId> https://tatum.io/apidoc#operation/GetIPFSData
+    ipfs delete <fileId> https://tatum.io/apidoc#operation/DeleteIPFSData
 ## Bitcoin blockchain operations, API key is required
     bitcoin block current    https://tatum.io/apidoc#operation/BtcGetBlockChainInfo
     bitcoin block hash <height>     https://tatum.io/apidoc#operation/BtcGetBlockHash
@@ -29,6 +32,21 @@ Commands
     bitcoin transaction utxo <hash> <i>     https://tatum.io/apidoc#operation/BtcGetUTXO
     bitcoin transaction broadcast <data>    https://tatum.io/apidoc#operation/BtcBroadcast
     bitcoin transaction create <testnet> <JSON stringified request body>    https://tatum.io/apidoc#operation/BtcTransferBlockchain
+## Ada blockchain operations, API key is required
+    ada block current   https://tatum.io/apidoc#operation/AdaGetBlockChainInfo
+    ada block detail <hashOrHeight> https://tatum.io/apidoc#operation/AdaGetBlock
+    ada transaction detail <hash>   https://tatum.io/apidoc#operation/AdaGetRawTransaction
+    ada transaction address <address> <pageSize> <offset>  https://tatum.io/apidoc#operation/AdaGetTxByAddress
+    ada transaction utxo <hash> <i>    https://tatum.io/apidoc#operation/AdaGetTxByAddress
+    ada transaction broadcast <data>  https://tatum.io/apidoc#operation/AdaBroadcast
+    ada transaction create <testnet> <JSON stringified request body>  https://tatum.io/apidoc#operation/AdaTransferBlockchain
+## Qtum blockchain operations, API key is required
+    qtum block current https://tatum.io/apidoc#operation/QtumGetCurrentBlock
+    qtum block detail <hashOrHeight> https://tatum.io/apidoc#operation/AdaGetBlock
+    qtum transaction detail <hash>  https://tatum.io/apidoc#operation/QtumGetBlock
+    qtum transaction address <address> <pageSize> <offset> https://tatum.io/apidoc#operation/GetQtumPaginatedTransaction
+    qtum transaction utxo <hash> https://tatum.io/apidoc#operation/GetQtumUTXOs
+    qtum transaction broadcast <data> https://tatum.io/apidoc#operation/QtumBroadcast
 
 ## Dogecoin blockchain operations, API key is required
     dogecoin block current    https://tatum.io/apidoc#operation/DogeGetBlockChainInfo
