@@ -1,7 +1,4 @@
 #!/usr/bin/env node
-import readline from 'readline';
-// tslint:disable-next-line:ordered-imports
-import { TATUM_API_URL } from '@tatumio/tatum/dist/src/constants';
 // tslint:disable-next-line:ordered-imports
 import {
     activateAccount,
@@ -168,9 +165,26 @@ import {
     scryptaGetUTXO,
     scryptaBroadcast,
     scryptaGetTransaction,
-    sendCeloOffchainTransaction
+    sendCeloOffchainTransaction,
+    adaGetBlockChainInfo,
+    adaGetBlock,
+    sendAdaTransaction,
+    adaGetTransactionsByAccount,
+    sendBscStoreDataTransaction,
+    adaGetUtxos,
+    adaBroadcast,
+    adaGetTransaction,
+    getQtumCurrentBlock,
+    getQtumBlock,
+    getQtumUTXOs,
+    getQtumTransaction,
+    getQtumTransactions,
+    getQtumBalance,
+    qtumBroadcast,
+    ipfsUpload,
+    ipfsGet,
+    ipfsDelete
 } from '@tatumio/tatum';
-import axios from 'axios';
 import meow from 'meow';
 import { Command } from './command';
 import { helpMessage, parse, print } from './helper';
@@ -476,6 +490,84 @@ const startup = async () => {
                     break;
             }
             break;
+        case Command.IPFS:
+            switch (command[1].toLowerCase()) {
+                case Command.STORE:
+                    print(await ipfsUpload(Buffer.from(command[2], 'utf-8'),command[3]))
+                    break;
+                case Command.GET:
+                    print(await ipfsGet(command[2]))
+                    break;
+                case Command.DELETE:
+                    print(await ipfsDelete(command[2]))
+                    break;
+            }
+        case Command.ADA:
+            switch (command[1].toLowerCase()) {
+                case Command.BLOCK:
+                    switch (command[2].toLowerCase()) {
+                        case Command.CURRENT:
+                            print(await adaGetBlockChainInfo());
+                            break;
+                        case Command.DETAIL:
+                            print(await adaGetBlock(command[3]));
+                            break;
+                    }
+                    break;
+                case Command.TRANSACTION:
+                    switch (command[2].toLowerCase()) {
+                        case Command.CREATE:
+                            print(await sendAdaTransaction(parse(command.slice(4).join(' '))));
+                            break;
+                        case Command.ADDRESS:
+                            print(await adaGetTransactionsByAccount(command[3], parseInt(command[4]), parseInt(command[5])));
+                            break;
+                        case Command.UTXO:
+                            print(await adaGetUtxos(command[3]));
+                            break;
+                        case Command.BROADCAST:
+                            print(await adaBroadcast(command[3]));
+                            break;
+                        case Command.DETAIL:
+                            print(await adaGetTransaction(command[3]));
+                            break;
+                    }
+                    break;
+            }
+        break;
+        case Command.QTUM:
+            switch (command[1].toLowerCase()) {
+                case Command.BLOCK:
+                    switch (command[2].toLowerCase()) {
+                        case Command.CURRENT:
+                            print(await getQtumCurrentBlock());
+                            break;
+                        case Command.DETAIL:
+                            print(await getQtumBlock(command[3]));
+                            break;
+                    }
+                    break;
+                case Command.ACCOUNT:
+                    print(await getQtumBalance(command[2]))
+                    break;
+                case Command.TRANSACTION:
+                    switch (command[2].toLowerCase()) {
+                        case Command.ADDRESS:
+                            print(await getQtumTransactions(command[3], parseInt(command[4]), parseInt(command[5])));
+                            break;
+                        case Command.UTXO:
+                            print(await getQtumUTXOs(command[3]));
+                            break;
+                        case Command.BROADCAST:
+                            print(await qtumBroadcast(command[3]));
+                            break;
+                        case Command.DETAIL:
+                            print(await getQtumTransaction(command[3]));
+                            break;
+                    }
+                    break;
+            }
+        break;
         case Command.DOGECOIN:
             switch (command[1].toLowerCase()) {
                 case Command.BLOCK:
@@ -948,10 +1040,13 @@ const startup = async () => {
                                     break;
                                 case Currency.XDC:
                                     print(await sendXdcStoreDataTransaction(parse(command.slice(3).join(' '))));
-                                    break;  
+                                    break;
                                 case Currency.ONE:
                                     print(await sendOneStoreDataTransaction(command[3].toLowerCase() === 'testnet',parse(command.slice(4).join(' '))));
-                                    break;                    
+                                    break;
+                                case Currency.BSC:
+                                    print(await sendBscStoreDataTransaction(parse(command.slice(4).join(' '))));
+                                    break;
                             }
                         } catch (e) {
                             print(e.response ? e.response.data : e);
